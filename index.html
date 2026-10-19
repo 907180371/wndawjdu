@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>云端彝乡财务管理系统</title>
+<style>
+:root {
+  --bg: #f5faf7;
+  --surface: #ffffff;
+  --ink: #1a3b2e;
+  --ink-2: #20503c;
+  --primary: #2f8f63;
+  --primary-deep: #257a52;
+  --primary-dark: #1b5e3f;
+  --primary-soft: #e4f3ec;
+  --primary-faint: #eef8f2;
+  --accent: #c8512e;
+  --line: #d5e8dd;
+  --line-soft: #e3f0e9;
+  --muted: #4a6b5c;
+  --faint: #7f9d8f;
+  --positive: #2f8f63;
+  --positive-soft: #e4f3ec;
+  --negative: #d85454;
+  --negative-soft: #fbeaea;
+  --gold: #c8922e;
+  --gold-soft: #f7eedd;
+  --serif: "Songti SC", "STSong", "SimSun", "Noto Serif SC", "Source Han Serif SC", serif;
+  --sans: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", "Source Han Sans SC", -apple-system, "Segoe UI", sans-serif;
+  --mono: "SF Mono", "Menlo", "Consolas", "Roboto Mono", monospace;
+  --topnav-h: 64px;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow-card: 0 1px 2px rgba(26, 59, 46,.04), 0 4px 14px rgba(26, 59, 46,.06);
+  --shadow-pop: 0 8px 28px rgba(26, 59, 46,.16);
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-base: 14.5px;
+  --fs-md: 16px;
+  --fs-lg: 20px;
+  --fs-xl: 26px;
+  --fs-2xl: 34px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: var(--sans); font-size: var(--fs-base); color: var(--ink); background: var(--bg); line-height: 1.6; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+.num, .amount, td.num, .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: 0; }
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.topnav { position: sticky; top: 0; z-index: 50; background: var(--surface); border-bottom: 1px solid var(--line); box-shadow: 0 1px 3px rgba(26, 59, 46,.05); }
+.topnav-inner { max-width: 1240px; margin: 0 auto; height: var(--topnav-h); display: flex; align-items: center; gap: 18px; padding: 0 24px; }
+.brand { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+.brand-mark { width: 38px; height: 38px; flex: 0 0 38px; display: grid; place-items: center; color: var(--primary); }
+.brand-mark svg { width: 38px; height: 38px; display: block; }
+.brand-name { font-family: var(--serif); font-size: 18px; font-weight: 700; letter-spacing: 1px; color: var(--ink-2); line-height: 1.1; }
+.brand-sub { font-size: 11px; color: var(--faint); letter-spacing: .5px; }
+.nav { display: flex; gap: 2px; margin: 0 auto; }
+.nav a { display: flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 8px; color: var(--muted); font-size: 14.5px; transition: background .15s, color .15s; }
+.nav a:hover { background: var(--primary-faint); color: var(--primary); text-decoration: none; }
+.nav a.active { background: var(--primary-soft); color: var(--primary-deep); font-weight: 600; }
+.nav-ico { width: 18px; height: 18px; flex: 0 0 18px; display: flex; align-items: center; justify-content: center; }
+.nav-ico svg { display: block; width: 18px; height: 18px; }
+.topnav-right { flex: 0 0 auto; display: flex; align-items: center; gap: 10px; }
+.topnav-date { color: var(--faint); font-size: var(--fs-sm); white-space: nowrap; }
+.main { min-height: 100vh; }
+.content { padding: 28px 24px 48px; max-width: 1240px; width: 100%; margin: 0 auto; }
+.page-head { margin-bottom: 22px; }
+.page-title { font-family: var(--serif); font-size: var(--fs-xl); font-weight: 700; letter-spacing: .5px; color: var(--ink); margin: 0; }
+.page-meta { color: var(--muted); margin: 4px 0 0; }
+.btn { display: inline-flex; align-items: center; gap: 7px; font-family: var(--sans); font-size: var(--fs-base); padding: 8px 16px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; transition: all .15s; white-space: nowrap; }
+.btn:hover { border-color: var(--primary); color: var(--primary); }
+.btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-deep); border-color: var(--primary-deep); color: #fff; }
+.btn-green { background: var(--primary-dark); border-color: var(--primary-dark); color: #fff; }
+.btn-green:hover { background: var(--primary-deep); border-color: var(--primary-deep); color: #fff; }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--muted); }
+.btn-ghost:hover { background: var(--primary-faint); border-color: transparent; color: var(--primary); }
+.btn-sm { padding: 5px 12px; font-size: var(--fs-sm); }
+.btn-block { width: 100%; justify-content: center; }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.card { background: var(--surface); border: 1px solid var(--line-soft); border-radius: var(--radius); box-shadow: var(--shadow-card); padding: 22px; }
+.card + .card { margin-top: 18px; }
+.card-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.card-title { font-family: var(--serif); font-size: var(--fs-md); font-weight: 700; letter-spacing: .5px; color: var(--ink-2); }
+.card-sub { color: var(--faint); font-size: var(--fs-sm); }
+.grid { display: grid; gap: 18px; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-2-1 { grid-template-columns: 2fr 1fr; }
+.grid-1-2 { grid-template-columns: 1fr 2fr; }
+.stat { padding: 18px 20px; position: relative; overflow: hidden; }
+.stat-label { font-size: var(--fs-sm); color: var(--muted); letter-spacing: .5px; }
+.stat-value { font-family: var(--serif); font-size: var(--fs-2xl); font-weight: 700; line-height: 1.15; margin-top: 6px; color: var(--ink); }
+.stat-value .unit { font-size: var(--fs-base); font-weight: 400; color: var(--faint); margin-left: 3px; font-family: var(--sans); }
+.stat-hint { font-size: var(--fs-xs); color: var(--faint); margin-top: 7px; }
+.stat.pos .stat-value { color: var(--positive); }
+.stat.neg .stat-value { color: var(--negative); }
+.stat.blue, .stat.ink { border-top: 3px solid var(--primary); }
+.stat.gold { border-top: 3px solid var(--gold); }
+.stat.accent { border-top: 3px solid var(--accent); }
+.stat.delta { font-size: var(--fs-sm); margin-top: 8px; font-weight: 600; }
+.stat.delta.up { color: var(--positive); }
+.stat.delta.down { color: var(--negative); }
+.badge { display: inline-flex; align-items: center; gap: 5px; font-size: var(--fs-xs); padding: 2px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); background: var(--surface); white-space: nowrap; }
+.badge.income { color: var(--positive); border-color: #bfe2d2; background: var(--positive-soft); }
+.badge.expense { color: var(--negative); border-color: #f0c5c5; background: var(--negative-soft); }
+.badge.warn { color: #9a6d14; border-color: #ecd9a6; background: var(--gold-soft); }
+.badge.alert { color: #fff; border-color: var(--negative); background: var(--negative); }
+.badge.ok { color: var(--positive); border-color: #bfe2d2; background: var(--positive-soft); }
+.badge.blue { color: var(--primary-deep); border-color: #bfd9f0; background: var(--primary-soft); }
+.stamp { display: inline-block; padding: 5px 13px; border: 2px solid var(--accent); color: var(--accent); font-family: var(--serif); font-weight: 700; letter-spacing: 3px; border-radius: 5px; transform: rotate(-2deg); box-shadow: inset 0 0 0 1px rgba(200, 81, 46, .22); background: transparent; }
+.stamp.watch { border-color: var(--gold); color: #9a6d14; box-shadow: inset 0 0 0 1px rgba(200, 146, 46, .25); }
+.stamp.normal { border-color: var(--positive); color: var(--positive); box-shadow: inset 0 0 0 1px rgba(47, 143, 99, .25); }
+.field { margin-bottom: 16px; }
+.field-label { display: block; font-size: var(--fs-sm); color: var(--muted); margin-bottom: 6px; }
+.field-label .req { color: var(--accent); }
+.input, .select, .textarea { width: 100%; font-family: var(--sans); font-size: var(--fs-base); padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fff; color: var(--ink); transition: border .15s, box-shadow .15s; }
+.input:focus, .select:focus, .textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(47, 111, 176, .14); }
+.textarea { resize: vertical; min-height: 74px; line-height: 1.55; }
+.select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235d7a99' fill='none' stroke-width='1.6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+.form-row { display: grid; gap: 16px; }
+.form-row.cols-2 { grid-template-columns: 1fr 1fr; }
+.form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.hint { font-size: var(--fs-xs); color: var(--faint); margin-top: 5px; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line-soft); border-radius: var(--radius-sm); }
+table.ledger { width: 100%; border-collapse: collapse; font-size: var(--fs-base); }
+table.ledger thead th { background: var(--primary-dark); color: #fff; font-weight: 600; font-size: var(--fs-sm); text-align: left; padding: 11px 14px; letter-spacing: .4px; white-space: nowrap; border-bottom: 2px solid var(--primary-soft); }
+table.ledger thead th.num, table.ledger td.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+table.ledger tbody td { padding: 11px 14px; border-top: 1px solid var(--line-soft); vertical-align: top; }
+table.ledger tbody tr:nth-child(even) { background: #f7fbf9; }
+table.ledger tbody tr:hover { background: var(--primary-faint); }
+table.ledger td .sub { display: block; font-size: var(--fs-xs); color: var(--faint); }
+td.pos { color: var(--positive); font-weight: 600; }
+td.neg { color: var(--negative); font-weight: 600; }
+.empty { text-align: center; color: var(--faint); padding: 40px 20px; }
+.empty .big { font-size: 30px; display: block; margin-bottom: 8px; }
+.section-title { font-family: var(--serif); font-size: var(--fs-xl); font-weight: 700; margin: 4px 0 4px; letter-spacing: .5px; color: var(--ink); }
+.section-lead { color: var(--muted); margin: 0 0 22px; max-width: 720px; }
+.tabs { display: inline-flex; gap: 4px; background: var(--primary-faint); border: 1px solid var(--line-soft); border-radius: 9px; padding: 4px; flex-wrap: wrap; }
+.tab { padding: 6px 15px; border-radius: 7px; font-size: var(--fs-sm); cursor: pointer; color: var(--muted); border: none; background: transparent; font-family: var(--sans); }
+.tab:hover { color: var(--primary); }
+.tab.active { background: var(--surface); color: var(--primary-deep); box-shadow: var(--shadow-card); font-weight: 600; }
+.toast { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 18px; border-radius: 8px; font-size: var(--fs-sm); box-shadow: var(--shadow-pop); z-index: 100; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.success { background: var(--positive); }
+.toast.error { background: var(--negative); }
+.chart-box { position: relative; width: 100%; }
+.chart-box svg { display: block; width: 100%; height: auto; }
+.chart-legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: var(--fs-sm); color: var(--muted); margin-top: 8px; }
+.chart-legend .lg { display: inline-flex; align-items: center; gap: 6px; }
+.chart-legend .sw { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+.chart-tip { position: absolute; pointer-events: none; background: var(--ink); color: #fff; font-size: var(--fs-xs); padding: 7px 10px; border-radius: 6px; white-space: nowrap; opacity: 0; transition: opacity .12s; z-index: 20; box-shadow: var(--shadow-pop); }
+.sizhu { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line-soft); border-radius: var(--radius); overflow: hidden; background: var(--surface); box-shadow: var(--shadow-card); }
+.sizhu-col { padding: 20px 24px; position: relative; border-left: 1px solid var(--line-soft); }
+.sizhu-col:first-child { border-left: none; }
+.sizhu-col .zh { font-family: var(--serif); font-size: var(--fs-md); letter-spacing: 3px; color: var(--muted); }
+.sizhu-col .en { font-size: var(--fs-xs); color: var(--faint); letter-spacing: 1px; margin-top: 2px; }
+.sizhu-col .val { font-family: var(--serif); font-size: 27px; font-weight: 700; margin-top: 10px; letter-spacing: .5px; color: var(--ink); }
+.sizhu-col.income .val { color: var(--positive); }
+.sizhu-col.expense .val { color: var(--negative); }
+.sizhu-col.final .val { color: var(--primary-deep); }
+.sizhu-arrow { position: absolute; right: -11px; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 50%; display: grid; place-items: center; color: var(--faint); font-size: 11px; z-index: 5; }
+.sizhu-col { animation: sizhuIn .5s ease both; }
+.sizhu-col:nth-child(1) { animation-delay: .05s; }
+.sizhu-col:nth-child(2) { animation-delay: .14s; }
+.sizhu-col:nth-child(3) { animation-delay: .23s; }
+.sizhu-col:nth-child(4) { animation-delay: .32s; }
+@keyframes sizhuIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.advice { border-left: 4px solid var(--primary); background: var(--surface); border: 1px solid var(--line-soft); border-left-width: 4px; border-radius: var(--radius-sm); padding: 16px 18px; }
+.advice + .advice { margin-top: 14px; }
+.advice-head { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; }
+.advice-title { font-weight: 600; font-size: var(--fs-md); color: var(--ink); }
+.advice-body { color: var(--muted); font-size: var(--fs-base); }
+.advice-metric { margin-top: 9px; font-size: var(--fs-sm); color: var(--faint); }
+.advice-metric b { color: var(--ink); font-family: var(--mono); }
+.advice.level-normal { border-left-color: var(--positive); }
+.advice.level-watch { border-left-color: var(--gold); }
+.advice.level-warn { border-left-color: var(--negative); }
+.overview-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+.ov-title { font-family: var(--serif); font-size: var(--fs-xl); font-weight: 700; letter-spacing: .5px; color: var(--ink); }
+.ov-sub { color: var(--faint); font-size: var(--fs-sm); margin-top: 4px; }
+.module-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.module-card { background: var(--surface); border: 1px solid var(--line-soft); border-radius: var(--radius); padding: 16px 18px; cursor: pointer; box-shadow: var(--shadow-card); transition: transform .15s, box-shadow .15s, border-color .15s; }
+.module-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: var(--shadow-pop); }
+.module-card .m-ico { width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary-deep); margin-bottom: 12px; }
+.module-card .m-title { font-family: var(--serif); font-weight: 700; font-size: var(--fs-md); color: var(--ink-2); }
+.module-card .m-status { font-size: var(--fs-xs); color: var(--muted); margin-top: 5px; font-weight: 500; }
+.module-card .m-desc { font-size: var(--fs-xs); color: var(--faint); margin-top: 2px; }
+.radar-box { width: 100%; max-width: 340px; margin: 0 auto; }
+.radar-box svg { display: block; width: 100%; height: auto; }
+.view { animation: viewIn .26s ease both; }
+@keyframes viewIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 980px) {
+  .topnav-inner { gap: 8px; padding: 0 14px; }
+  .brand-sub { display: none; }
+  .nav { overflow-x: auto; gap: 0; }
+  .nav a { padding: 8px 10px; font-size: 13.5px; white-space: nowrap; }
+  .topnav-date { display: none; }
+  .content { padding: 20px 14px 40px; }
+  .grid-4, .grid-3, .grid-2, .grid-2-1, .grid-1-2 { grid-template-columns: 1fr; }
+  .sizhu { grid-template-columns: 1fr 1fr; }
+  .sizhu-col { border-top: 1px solid var(--line-soft); }
+  .sizhu-col:nth-child(2) { border-left: 1px solid var(--line-soft); }
+  .sizhu-col:nth-child(1), .sizhu-col:nth-child(2) { border-top: none; }
+  .sizhu-arrow { display: none; }
+  .form-row.cols-3, .form-row.cols-2 { grid-template-columns: 1fr; }
+  .module-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .module-grid { grid-template-columns: 1fr; }
+  .brand-name { font-size: 16px; }
+}
+@media (max-width: 640px) {
+  .topnav { position: sticky; }
+  .topnav-inner { height: auto; min-height: var(--topnav-h); flex-wrap: wrap; padding: 8px 12px; gap: 6px; }
+  .brand-mark { width: 32px; height: 32px; flex-basis: 32px; }
+  .brand-mark svg { width: 32px; height: 32px; }
+  .brand-name { font-size: 15px; letter-spacing: .5px; }
+  .nav { order: 3; flex: 1 1 100%; width: 100%; overflow-x: auto; justify-content: flex-start; -webkit-overflow-scrolling: touch; }
+  .nav a { padding: 7px 10px; font-size: 13px; white-space: nowrap; }
+  .topnav-right { margin-left: auto; }
+  .topnav-right .btn { padding: 6px 10px; font-size: 13px; }
+  .content { padding: 16px 12px 36px; }
+  .page-title { font-size: 22px; }
+  .page-meta { font-size: 13px; }
+  .section-title { font-size: 20px; }
+  .card { padding: 16px; }
+  .card-head { gap: 8px; margin-bottom: 12px; }
+  .overview-head { gap: 8px; }
+  .ov-title { font-size: 20px; }
+  .sizhu-col { padding: 14px 12px; }
+  .sizhu-col .zh { font-size: 14px; letter-spacing: 2px; }
+  .sizhu-col .val { font-size: 19px; }
+  .stat { padding: 14px 16px; }
+  .stat-value { font-size: 24px; }
+  .radar-box { max-width: 260px; }
+  table.ledger { font-size: 13px; }
+  table.ledger thead th, table.ledger tbody td { padding: 8px 10px; }
+  .btn { padding: 7px 12px; font-size: 13.5px; }
+  .field { margin-bottom: 12px; }
+  .input, .select, .textarea { font-size: 15px; padding: 8px 10px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+@media print { .topnav, .btn, .no-print { display: none !important; } .content { padding: 0; } body { background: #fff; } }
+</style>
+</head>
+<body>
+<header class="topnav" id="topnav"></header>
+<main class="main">
+  <div class="content" id="content"></div>
+</main>
+
+<script>
+/* ============ subjects.js ============ */
+const SUBJECT_CATEGORIES = [
+  { key: 'asset',     name: '资产类' },
+  { key: 'liability', name: '负债类' },
+  { key: 'equity',    name: '所有者权益类' },
+  { key: 'income',    name: '收入类' },
+  { key: 'expense',   name: '支出类' }
+];
+const FLOW = { IN: 'income', OUT: 'expense' };
+const FLOW_LABEL = { income: '收入', expense: '支出' };
+const SUBJECTS = [
+  { code: '401', name: '经营收入',       cat: 'income', flow: 'income',
+    desc: '销售农产品、提供劳务等日常经营所得',
+    keywords: ['销售','出售','卖','销售收入','农产品','粮食','玉米','小麦','水稻','大豆','蔬菜','水果','生猪','牛','羊','鸡','鸭','鱼','蛋','奶','茶叶','烟叶','药材','劳务','服务','经营','收购','交易','民宿','客房','住宿','餐饮','旅游','接待','农家乐','游客','蜂蜜','蜂王浆','天麻','文创','展演','门票','文化'] },
+  { code: '402', name: '发包及上交收入', cat: 'income', flow: 'income',
+    desc: '发包、租赁、土地流转及成员上交款',
+    keywords: ['发包','承包','上交','租金','租赁','土地流转','流转','出租','承包费','租金收入','发包收入','摊位','门面','厂房','鱼塘','山林','果园'] },
+  { code: '403', name: '补助收入',       cat: 'income', flow: 'income',
+    desc: '各级财政及上级拨付的补助、专项资金',
+    keywords: ['补助','补贴','拨款','财政','上级','专项','转移支付','项目资金','帮扶','奖补','以奖代补','一事一议','惠农','扶持','救灾','重建'] },
+  { code: '404', name: '其他收入',       cat: 'income', flow: 'income',
+    desc: '利息、捐赠、罚款、赔偿等非经营性收入',
+    keywords: ['利息','捐赠','赞助','罚款','赔偿','违约金','处置','变卖','废品','其他收入','存款利息','礼金','红包','奖励'] },
+  { code: '501', name: '经营支出',       cat: 'expense', flow: 'expense',
+    desc: '生产经营发生的直接成本',
+    keywords: ['种子','化肥','农药','饲料','兽药','农膜','柴油','汽油','水电费','人工费','劳务费','运输','运费','维修','材料','生产','养殖','种植','种苗','机耕','播种','收割','施肥','灌溉','农资','民宿','布草','食材','客房','采购食材','蜂箱','养蜂','遮阳','加工'] },
+  { code: '502', name: '管理费用',       cat: 'expense', flow: 'expense',
+    desc: '村务管理与人员薪酬等间接费用',
+    keywords: ['办公','办公用品','差旅','会议','培训','招待','接待','通讯','电话费','宽带','水电','取暖','工资','村干部','报酬','补贴','报刊','印刷','审计','律师','咨询','车辆','油费','修车','保险','维修'] },
+  { code: '503', name: '其他支出',       cat: 'expense', flow: 'expense',
+    desc: '公益、捐赠、救济等非经营性支出',
+    keywords: ['捐赠','救济','慰问','扶贫','公益','捐款','罚款','赔偿','损失','其他支出','赞助','献爱心','困难','养老','医疗','助学','丧葬','文化','活动筹备','展演'] },
+  { code: '101', name: '现金',           cat: 'asset', flow: 'both', desc: '库存现金', keywords: [] },
+  { code: '102', name: '银行存款',       cat: 'asset', flow: 'both', desc: '存入银行及其他金融机构的款项', keywords: [] },
+  { code: '121', name: '库存物资',       cat: 'asset', flow: 'expense', desc: '入库未用的农资、材料等', keywords: ['入库','采购物资','储备','库存','备料'] },
+  { code: '151', name: '固定资产',       cat: 'asset', flow: 'expense', desc: '房屋、设备、农机等长期资产', keywords: ['购买设备','购置','购电脑','购打印机','办公设备','购车辆','买车','拖拉机','收割机','插秧机','农机','购桌椅','购电视','购空调','购冰箱','购仪器','固定资产','购机器'] },
+  { code: '154', name: '在建工程',       cat: 'asset', flow: 'expense', desc: '在建的房屋、道路、水利等工程', keywords: ['修路','修桥','建房','修建','工程','水利','灌溉','围墙','广场','装修','翻建','施工','打井','改水','改厕','绿化','亮化'] },
+  { code: '201', name: '短期借款',       cat: 'liability', flow: 'income', desc: '一年内需偿还的借款', keywords: ['借款','贷款','借入','周转金','借贷','融资'] },
+  { code: '202', name: '应付款',         cat: 'liability', flow: 'expense', desc: '应付未付的款项', keywords: ['偿还','归还','还款','还贷','结清','付欠款','付款给','清偿'] },
+  { code: '221', name: '长期借款及应付款', cat: 'liability', flow: 'income', desc: '一年以上的借款及长期应付款', keywords: ['长期借款','专项借款','长期应付款'] },
+  { code: '231', name: '一事一议资金',   cat: 'liability', flow: 'income', desc: '村民一事一议筹资筹劳', keywords: ['一事一议','筹资','筹劳'] },
+  { code: '301', name: '资本',           cat: 'equity', flow: 'income', desc: '成员入股、集体投入的资本', keywords: ['入股','注资','资本','投资','股金','集体投入','本金'] },
+  { code: '311', name: '公积公益金',     cat: 'equity', flow: 'both', desc: '从收益中提取的公积金、公益金', keywords: ['公积金','公益金','提取'] }
+];
+const SUBJECT_MAP = Object.fromEntries(SUBJECTS.map(s => [s.code, s]));
+function getSubject(code) { return SUBJECT_MAP[code] || null; }
+const ACCOUNTS = [ { key: 'cash', name: '现金' }, { key: 'bank', name: '银行存款' } ];
+function mapSubject(text, flow) {
+  const t = (text || '').trim();
+  if (!t) return null;
+  let best = null, bestScore = 0, bestReasons = [];
+  for (const s of SUBJECTS) {
+    if (!s.keywords || !s.keywords.length) continue;
+    if (s.flow !== flow && s.flow !== 'both') continue;
+    let score = 0; const reasons = [];
+    for (const kw of s.keywords) {
+      if (!kw) continue;
+      const idx = t.indexOf(kw);
+      if (idx !== -1) { const w = kw.length; score += (w >= 4 ? 3 : w >= 2 ? 2 : 1) * 2; reasons.push(kw); }
+    }
+    if (score > bestScore) { bestScore = score; best = s; bestReasons = reasons; }
+  }
+  if (!best) return null;
+  return { code: best.code, name: best.name, cat: best.cat, score: bestScore, matched: [...new Set(bestReasons)].slice(0, 4) };
+}
+function subjectGuide(code) {
+  const s = getSubject(code);
+  if (!s) return '';
+  const kws = (s.keywords || []).filter(Boolean).slice(0, 6);
+  return { desc: s.desc, examples: kws };
+}
+</script>
+
+<script>
+/* ============ store.js ============ */
+const STORE_KEY = 'hezhang.v1';
+const storage = (function () {
+  try {
+    const k = '__hezhang_test__';
+    window.localStorage.setItem(k, '1');
+    window.localStorage.removeItem(k);
+    return window.localStorage;
+  } catch (e) {
+    let mem = {};
+    return {
+      getItem: k => (k in mem ? mem[k] : null),
+      setItem: (k, v) => { mem[k] = String(v); },
+      removeItem: k => { delete mem[k]; },
+      get persistent() { return false; }
+    };
+  }
+})();
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+function defaultSettings() {
+  return { orgName: '底底古村集体经济组织', cashInitial: 26000, bankInitial: 184000, currency: '¥', periodStart: '2026-07' };
+}
+function emptyState() { return { version: 1, settings: defaultSettings(), transactions: [] }; }
+let _state = null;
+function loadState() {
+  if (_state) return _state;
+  try {
+    const raw = storage.getItem(STORE_KEY);
+    if (raw) {
+      const s = JSON.parse(raw);
+      if (s && s.version === 1 && Array.isArray(s.transactions)) {
+        _state = { ...emptyState(), ...s, settings: { ...defaultSettings(), ...(s.settings || {}) } };
+        if (_state.settings.orgName && _state.settings.orgName.indexOf('向阳村') !== -1) {
+          _state.settings.orgName = '底底古村集体经济组织';
+          saveState();
+        }
+        return _state;
+      }
+    }
+  } catch (e) {}
+  _state = emptyState();
+  _state.transactions = buildSample();
+  saveState();
+  return _state;
+}
+function saveState() { try { storage.setItem(STORE_KEY, JSON.stringify(_state)); } catch (e) {} }
+function getState() { return loadState(); }
+function getTransactions() { return getState().transactions; }
+function getSettings() { return getState().settings; }
+function isPersistent() { return storage.persistent !== false; }
+function addTransaction(t) {
+  const st = getState();
+  const tx = {
+    id: uid(), date: t.date || todayStr(), flow: t.flow, amount: round2(Number(t.amount) || 0),
+    summary: (t.summary || '').trim(), subjectCode: t.subjectCode || '', subjectName: t.subjectName || '',
+    account: t.account || 'bank', counterparty: (t.counterparty || '').trim(), note: (t.note || '').trim(),
+    createdAt: new Date().toISOString()
+  };
+  st.transactions.push(tx);
+  saveState();
+  return tx;
+}
+function deleteTransaction(id) { const st = getState(); st.transactions = st.transactions.filter(x => x.id !== id); saveState(); }
+function updateSettings(patch) { const st = getState(); st.settings = { ...st.settings, ...patch }; saveState(); }
+function exportData() { return JSON.stringify(getState(), null, 2); }
+function importData(json) {
+  const data = JSON.parse(json);
+  if (!data || !Array.isArray(data.transactions)) throw new Error('数据格式不正确');
+  _state = { ...emptyState(), ...data, settings: { ...defaultSettings(), ...(data.settings || {}) }, transactions: data.transactions.map(x => ({ ...x, amount: round2(Number(x.amount) || 0) })) };
+  saveState();
+  return _state;
+}
+function resetData() { _state = emptyState(); saveState(); }
+function seedData() { _state = emptyState(); _state.transactions = buildSample(); saveState(); return _state; }
+function round2(n) { return Math.round(n * 100) / 100; }
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function fmtMoney(n) {
+  const v = Number(n) || 0;
+  const sign = v < 0 ? '-' : '';
+  return sign + '¥' + Math.abs(v).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function fmtMoney0(n) {
+  const v = Number(n) || 0;
+  const sign = v < 0 ? '-' : '';
+  return sign + '¥' + Math.abs(v).toLocaleString('zh-CN', { maximumFractionDigits: 0 });
+}
+function fmtPeriodStart(s) {
+  if (!s) return '';
+  const p = String(s).split('-');
+  return p[0] + '年' + Number(p[1]) + '月';
+}
+function buildSample() {
+  const rows = [];
+  const add = (m, d, flow, amount, summary, code, account) => {
+    const s = getSubject(code) || {};
+    rows.push({
+      id: uid() + m + d, date: `2026-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`,
+      flow, amount, summary, subjectCode: code, subjectName: s.name || code,
+      account: account || 'bank', counterparty: '', note: '', createdAt: new Date().toISOString()
+    });
+  };
+  const M = (...a) => add(...a);
+  M(7, 4, 'income', 21000, '收到上级一事一议筹资筹劳款', '231');
+  M(7, 8, 'income', 8600, '蜂蜜销售收入', '401');
+  M(7, 10, 'expense', 14000, '一事一议项目：广场硬化', '154');
+  M(7, 12, 'income', 18900, '民宿暑期客房及餐饮收入', '401');
+  M(7, 15, 'expense', 9600, '夏季农田灌溉水电费', '501');
+  M(7, 18, 'expense', 5600, '民宿水电费及日常维护', '501');
+  M(7, 20, 'expense', 12400, '发放村干部三季度报酬', '502');
+  M(7, 22, 'expense', 4800, '购买蜂箱及养蜂工具', '501');
+  M(7, 25, 'income', 12000, '彝族火把节文化展演门票收入', '401');
+  M(7, 26, 'income', 5300, '出售鸡蛋', '401');
+  M(8, 2, 'income', 9200, '天麻鲜品销售收入', '401');
+  M(8, 5, 'income', 13000, '出租村集体厂房租金', '402');
+  M(8, 9, 'income', 22300, '民宿暑期旺季客房收入', '401');
+  M(8, 12, 'expense', 18500, '购买联合收割机', '151');
+  M(8, 15, 'expense', 6800, '民宿食材采购及人工', '501');
+  M(8, 16, 'expense', 8200, '秋季备耕购买种子化肥', '501');
+  M(8, 20, 'expense', 7600, '购买天麻种苗及遮阳网', '501');
+  M(8, 22, 'expense', 4600, '防汛物资及应急支出', '503');
+  M(8, 25, 'expense', 6800, '彝族刺绣文创产品制作材料', '501');
+  M(8, 28, 'income', 6800, '出售蔬菜', '401');
+  M(9, 5, 'income', 11800, '彝族文创产品销售收入', '401');
+  M(9, 6, 'income', 32000, '出售玉米', '401');
+  M(9, 8, 'income', 9800, '民宿接待游客住宿收入', '401');
+  M(9, 10, 'income', 14500, '蜂蜜及蜂王浆销售收入', '401');
+  M(9, 11, 'income', 16000, '收到财政补助资金', '403');
+  M(9, 15, 'expense', 11000, '秋季机收机耕费', '501');
+  M(9, 18, 'expense', 5200, '天麻烘干加工电费及人工', '501');
+  M(9, 20, 'expense', 5300, '维修村部屋顶', '502');
+  M(9, 25, 'expense', 2800, '重阳节慰问老人', '503');
+  M(10, 2, 'income', 17500, '民宿国庆黄金周客房收入', '401');
+  M(10, 5, 'income', 15000, '发包集体山林承包费', '402');
+  M(10, 6, 'expense', 3900, '民宿水电费及物资采购', '501');
+  M(10, 8, 'income', 13600, '天麻干品销售收入', '401');
+  M(10, 9, 'expense', 7300, '秋播购买小麦种子、化肥', '501');
+  M(10, 12, 'income', 8800, '彝族年文化活动门票及赞助收入', '401');
+  M(10, 14, 'expense', 12400, '发放村干部四季度报酬', '502');
+  M(10, 16, 'income', 9000, '出售水稻', '401');
+  M(10, 18, 'expense', 6200, '彝族年文化活动筹备支出', '503');
+  return rows;
+}
+</script>
+
+<script>
+/* ============ analysis.js ============ */
+function parseYMD(s) {
+  if (!s) return null;
+  const m = String(s).slice(0, 10).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return null;
+  return new Date(+m[1], +m[2] - 1, +m[3]);
+}
+function ymd(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+function startOfWeek(d) { const x = new Date(d); const wd = (x.getDay() + 6) % 7; x.setDate(x.getDate() - wd); return x; }
+function startOfMonth(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
+function startOfQuarter(d) { return new Date(d.getFullYear(), Math.floor(d.getMonth() / 3) * 3, 1); }
+function startOfYear(d) { return new Date(d.getFullYear(), 0, 1); }
+const PERIODS = {
+  week:    { key: 'week',    name: '本周',   long: '近一周' },
+  month:   { key: 'month',   name: '本月',   long: '近一月' },
+  quarter: { key: 'quarter', name: '本季度', long: '近一季度' },
+  year:    { key: 'year',    name: '本年度', long: '近一年' }
+};
+function periodStart(key, ref) {
+  const d = ref || new Date();
+  if (key === 'week') return startOfWeek(d);
+  if (key === 'month') return startOfMonth(d);
+  if (key === 'quarter') return startOfQuarter(d);
+  return startOfYear(d);
+}
+function getPeriodInfo(key, ref) {
+  const refD = ref || new Date();
+  const from = periodStart(key, refD);
+  let to = new Date(refD);
+  const fromD = ymd(from);
+  const toD = ymd(to);
+  const prevFrom = addDays(from, -periodLen(key, from));
+  const prevTo = addDays(from, -1);
+  return { key, from: fromD, to: toD, prevFrom: ymd(prevFrom), prevTo: ymd(prevTo), label: PERIODS[key].name };
+}
+function periodLen(key, from) {
+  if (key === 'week') return 7;
+  if (key === 'month') return daysInMonth(from);
+  if (key === 'quarter') return 90;
+  return 365;
+}
+function daysInMonth(d) { return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate(); }
+function filterTx(txs, from, to) {
+  return txs.filter(t => {
+    const d = String(t.date).slice(0, 10);
+    if (from && d < from) return false;
+    if (to && d > to) return false;
+    return true;
+  });
+}
+function aggregate(txs) {
+  const r = { income: 0, expense: 0, net: 0, count: 0, incomeBySubject: {}, expenseBySubject: {}, byAccount: { cash: 0, bank: 0 } };
+  for (const t of txs || []) {
+    const amt = Number(t.amount) || 0;
+    r.count++;
+    if (t.flow === 'income') { r.income += amt; addSub(r.incomeBySubject, t.subjectCode, t.subjectName, amt); }
+    else { r.expense += amt; addSub(r.expenseBySubject, t.subjectCode, t.subjectName, amt); }
+    r.byAccount[t.account] = (r.byAccount[t.account] || 0) + amt;
+  }
+  r.income = round2(r.income);
+  r.expense = round2(r.expense);
+  r.net = round2(r.income - r.expense);
+  return r;
+}
+function addSub(map, code, name, amt) {
+  if (!code) { code = '--'; name = '未分类'; }
+  if (!map[code]) map[code] = { code, name: name || code, amount: 0, count: 0 };
+  map[code].amount = round2(map[code].amount + amt);
+  map[code].count++;
+}
+function subjectList(map) { return Object.values(map || {}).sort((a, b) => b.amount - a.amount); }
+function topN(map, n) {
+  const list = subjectList(map);
+  const head = list.slice(0, n);
+  const rest = list.slice(n).reduce((s, x) => s + x.amount, 0);
+  const out = head.map(x => ({ name: x.name, amount: x.amount, count: x.count }));
+  if (rest > 0) out.push({ name: '其他', amount: round2(rest), count: 0 });
+  return out;
+}
+function monthlySeries(txs, n) {
+  n = n || 12;
+  const out = [];
+  const now = new Date();
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const from = ymd(d);
+    const to = ymd(new Date(d.getFullYear(), d.getMonth() + 1, 0));
+    const ag = aggregate(filterTx(txs, from, to));
+    out.push({ key: from.slice(0, 7), label: (d.getMonth() + 1) + '月', income: ag.income, expense: ag.expense, net: ag.net });
+  }
+  return out;
+}
+function computeRatios(aggr, totalIncome, totalExpense, settings) {
+  const income = totalIncome ?? aggr.income;
+  const expense = totalExpense ?? aggr.expense;
+  const net = income - expense;
+  const subIncome = aggr.incomeBySubject || {};
+  const subExpense = aggr.expenseBySubject || {};
+  const netMargin = income > 0 ? net / income : 0;
+  const expenseRatio = income > 0 ? expense / income : (expense > 0 ? 999 : 0);
+  const incList = subjectList(subIncome);
+  const incTotal = incList.reduce((s, x) => s + x.amount, 0) || 1;
+  const subsidizeRatio = ((subIncome['403'] || {}).amount || 0) / incTotal;
+  const topIncomeRatio = incList.length ? incList[0].amount / incTotal : 0;
+  const expList = subjectList(subExpense);
+  const expTotal = expList.reduce((s, x) => s + x.amount, 0) || 1;
+  const adminRatio = ((subExpense['502'] || {}).amount || 0) / expTotal;
+  return {
+    net, income, expense, netMargin, expenseRatio,
+    subsidizeRatio, topIncomeRatio, topIncomeName: incList[0]?.name || '',
+    adminRatio,
+    incomeStructure: incList.map(x => ({ name: x.name, amount: x.amount, ratio: x.amount / incTotal })),
+    expenseStructure: expList.map(x => ({ name: x.name, amount: x.amount, ratio: x.amount / expTotal }))
+  };
+}
+function balances(settings, totalIncome, totalExpense) {
+  const open = round2((Number(settings.cashInitial) || 0) + (Number(settings.bankInitial) || 0));
+  const close = round2(open + (totalIncome || 0) - (totalExpense || 0));
+  return { open, close, cash: settings.cashInitial || 0, bank: settings.bankInitial || 0 };
+}
+function generateAdvice(txs, settings) {
+  const all = aggregate(txs);
+  if (!txs || !txs.length) {
+    const r = computeRatios(all, all.income, all.expense, settings);
+    const bal = balances(settings, all.income, all.expense);
+    return { advice: [{ level: 'normal', title: '暂无数据', body: '还没有记账，先记录几笔收支后，这里会自动生成经营建议。', metric: '', actions: [] }], level: 'normal', levelName: '待录入', ratios: r, balances: bal, all };
+  }
+  const r = computeRatios(all, all.income, all.expense, settings);
+  const bal = balances(settings, all.income, all.expense);
+  const advice = [];
+  if (r.netMargin < 0) {
+    advice.push({ level: 'warn', title: '本期入不敷出', body: '支出超过收入，集体资金出现净流出，需要尽快查明原因并控制开支。', metric: `净收益率 ${pct(r.netMargin)}，收入 ${fmtMoney(r.income)}，支出 ${fmtMoney(r.expense)}`, actions: ['逐项核对大额支出是否合规', '暂停非必要工程与采购', '评估经营性项目是否继续投入'] });
+  } else if (r.netMargin < 0.05) {
+    advice.push({ level: 'watch', title: '盈利偏薄', body: '虽有结余，但净收益率不足 5%，抗风险能力较弱，建议开源节流。', metric: `净收益率 ${pct(r.netMargin)}`, actions: ['梳理可发包、可出租的集体资产', '压减管理费用'] });
+  } else {
+    advice.push({ level: 'normal', title: '盈利能力良好', body: '本期收大于支，集体积累稳步增加，可考虑将结余用于扩大再生产或提取公积公益金。', metric: `净收益率 ${pct(r.netMargin)}`, actions: ['按制度提取公积公益金', '评估优质固定资产购置'] });
+  }
+  if (r.expenseRatio > 0.8) {
+    advice.push({ level: 'warn', title: '支出占比过高', body: '支出占收入的比重超过 80%，仅余少量结余，需重点控制。', metric: `费用率 ${pct(r.expenseRatio)}`, actions: ['建立大额支出审批', '优先保障生产经营支出'] });
+  }
+  if (r.subsidizeRatio > 0.5) {
+    advice.push({ level: 'watch', title: '对补助依赖偏高', body: '收入中来自财政补助的比例超过一半，自身“造血”能力不足，一旦补助减少会影响运转。', metric: `补助收入占比 ${pct(r.subsidizeRatio)}`, actions: ['盘活集体资产增加发包/租金收入', '发展特色种养经营项目'] });
+  }
+  if (r.topIncomeRatio > 0.6 && r.subsidizeRatio <= 0.5) {
+    advice.push({ level: 'watch', title: '收入来源单一', body: `超过六成收入集中在“${r.topIncomeName}”，结构单一，建议拓宽渠道分散风险。`, metric: `第一大收入科目占比 ${pct(r.topIncomeRatio)}`, actions: ['拓展多元化经营', '探索服务性收入'] });
+  }
+  if (r.adminRatio > 0.35) {
+    advice.push({ level: 'watch', title: '管理费用偏高', body: '管理费用在总支出中占比超过 35%，需压减非生产性开支。', metric: `管理费用占支出 ${pct(r.adminRatio)}`, actions: ['精简会议、接待、差旅', '规范村干部报酬标准'] });
+  }
+  const monthlyAvgExpense = all.expense / Math.max(1, countActiveMonths(txs));
+  const monthsCushion = monthlyAvgExpense > 0 ? bal.close / monthlyAvgExpense : 999;
+  if (bal.close < 0) {
+    advice.push({ level: 'warn', title: '资金出现赤字', body: '期末资金为负，说明已经透支，须立即筹措资金并停止非必要支出。', metric: `期末资金 ${fmtMoney(bal.close)}`, actions: ['催收应收款', '申请短期周转或暂缓支付'] });
+  } else if (monthsCushion < 3) {
+    advice.push({ level: 'watch', title: '现金流偏紧', body: `期末资金仅够维持约 ${monthsCushion.toFixed(1)} 个月支出，低于 3 个月的警戒线。`, metric: `期末资金 ${fmtMoney(bal.close)}，月均支出 ${fmtMoney(round2(monthlyAvgExpense))}`, actions: ['预留至少 3 个月运转资金', '合理安排付款节奏'] });
+  } else {
+    advice.push({ level: 'normal', title: '现金流充裕', body: `期末资金可覆盖约 ${Math.min(monthsCushion, 99).toFixed(1)} 个月支出，流动性健康。`, metric: `期末资金 ${fmtMoney(bal.close)}` });
+  }
+  const recent = monthlySeries(txs, 3);
+  const negMonths = recent.filter(x => x.net < 0).length;
+  if (negMonths >= 2) {
+    advice.push({ level: 'warn', title: '连续数月亏损', body: `近 3 个月中有 ${negMonths} 个月结余为负，经营呈恶化趋势。`, metric: recent.map(x => `${x.label}${x.net >= 0 ? '+' : ''}${fmtMoney0(x.net)}`).join('、'), actions: ['找出亏损月份的主要支出', '重新评估持续性亏损项目'] });
+  }
+  const rank = { warn: 0, watch: 1, normal: 2 };
+  advice.sort((a, b) => rank[a.level] - rank[b.level]);
+  const worst = advice.reduce((m, a) => (rank[a.level] < rank[m] ? a.level : m), 'normal');
+  const levelName = { normal: '健康', watch: '需关注', warn: '需预警' }[worst];
+  return { advice, level: worst, levelName, ratios: r, balances: bal, all };
+}
+function pct(x) { return (x * 100).toFixed(1) + '%'; }
+function countActiveMonths(txs) {
+  if (!txs || !txs.length) return 1;
+  const dates = txs.map(t => String(t.date).slice(0, 7));
+  const uniq = [...new Set(dates)];
+  return Math.max(1, uniq.length);
+}
+</script>
+
+<script>
+/* ============ charts.js ============ */
+const CHART_COLORS = ['#2f8f63', '#5aa87e', '#8cc4a4', '#1b5e3f', '#71b892', '#3f946c', '#a3d0b6'];
+const CHART_GRID = '#e0efe6';
+const CHART_AXIS = '#7f9d8f';
+const CHART_LABEL = '#4a6b5c';
+const CHART_INK = '#1a3b2e';
+function _el(tag, attrs) {
+  const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+function clearChart(el) { el.innerHTML = ''; }
+function ensureTip(el) {
+  let tip = el.querySelector('.chart-tip');
+  if (!tip) { tip = document.createElement('div'); tip.className = 'chart-tip'; el.appendChild(tip); }
+  return tip;
+}
+function showTip(tip, html, x, y) {
+  tip.innerHTML = html;
+  tip.style.opacity = '1';
+  const bw = tip.offsetWidth || 0;
+  const box = tip.parentElement;
+  let left = x - bw / 2;
+  left = Math.max(6, Math.min(left, box.clientWidth - bw - 6));
+  tip.style.left = left + 'px';
+  tip.style.top = Math.max(4, y - tip.offsetHeight - 10) + 'px';
+}
+function hideTip(tip) { if (tip) tip.style.opacity = '0'; }
+function niceMax(v) {
+  if (v <= 0) return 100;
+  const pow = Math.pow(10, Math.floor(Math.log10(v)));
+  const n = v / pow;
+  const nice = n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10;
+  return nice * pow;
+}
+function axisFmt(n) {
+  if (n >= 100000000) return (n / 100000000).toFixed(1) + '亿';
+  if (n >= 10000) return (n / 10000).toFixed(n % 10000 === 0 ? 0 : 1) + '万';
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+  return String(Math.round(n));
+}
+function renderLine(el, labels, series, opts) {
+  opts = opts || {};
+  clearChart(el);
+  const W = 1000, H = opts.height || 320;
+  const padL = 60, padR = 18, padT = 22, padB = 36;
+  const iw = W - padL - padR, ih = H - padT - padB;
+  const allVals = series.flatMap(s => s.values);
+  const max = niceMax(Math.max(0, ...allVals));
+  const ticks = 5;
+  const svg = _el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img' });
+  for (let i = 0; i <= ticks; i++) {
+    const val = max * i / ticks;
+    const y = padT + ih - (ih * i / ticks);
+    svg.appendChild(_el('line', { x1: padL, y1: y, x2: W - padR, y2: y, stroke: CHART_GRID, 'stroke-width': 1 }));
+    const t = _el('text', { x: padL - 10, y: y + 4, 'text-anchor': 'end', 'font-size': 12, fill: CHART_AXIS });
+    t.textContent = axisFmt(val);
+    svg.appendChild(t);
+  }
+  const n = labels.length;
+  const xAt = i => n <= 1 ? padL + iw / 2 : padL + iw * i / (n - 1);
+  const yAt = v => padT + ih - (ih * v / max);
+  const labelStep = Math.ceil(n / 10);
+  labels.forEach((lb, i) => {
+    if (i % labelStep !== 0 && i !== n - 1) return;
+    const t = _el('text', { x: xAt(i), y: H - 10, 'text-anchor': 'middle', 'font-size': 12, fill: CHART_LABEL });
+    t.textContent = lb;
+    svg.appendChild(t);
+  });
+  series.forEach((s, si) => {
+    const color = s.color || CHART_COLORS[si % CHART_COLORS.length];
+    const pts = s.values.map((v, i) => [xAt(i), yAt(v)]);
+    const line = _el('polyline', { points: pts.map(p => p.join(',')).join(' '), fill: 'none', stroke: color, 'stroke-width': 2.5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' });
+    svg.appendChild(line);
+    if (opts.area && s.values.length > 1) {
+      const area = _el('polygon', { points: `${padL},${padT + ih} ${pts.map(p => p.join(',')).join(' ')} ${xAt(n - 1)},${padT + ih}`, fill: color, opacity: 0.12, stroke: 'none' });
+      svg.appendChild(area);
+    }
+    s.values.forEach((v, i) => { svg.appendChild(_el('circle', { cx: xAt(i), cy: yAt(v), r: 3, fill: '#ffffff', stroke: color, 'stroke-width': 2 })); });
+  });
+  const tip = ensureTip(el);
+  const band = _el('rect', { x: padL, y: padT, width: iw, height: ih, fill: 'transparent' });
+  const guide = _el('line', { y1: padT, y2: padT + ih, stroke: '#c8922e', 'stroke-width': 1, 'stroke-dasharray': '3 3', opacity: 0 });
+  svg.appendChild(guide);
+  svg.appendChild(band);
+  band.addEventListener('mousemove', ev => {
+    const rect = el.getBoundingClientRect();
+    const px = (ev.clientX - rect.left) / rect.width * W;
+    const rel = (px - padL) / iw;
+    const idx = Math.round(rel * (n - 1));
+    if (idx < 0 || idx >= n) { hideTip(tip); return; }
+    const gx = xAt(idx);
+    guide.setAttribute('x1', gx); guide.setAttribute('x2', gx); guide.setAttribute('opacity', 1);
+    const rows = series.map(s => {
+      const c = s.color || CHART_COLORS[series.indexOf(s) % CHART_COLORS.length];
+      return `<div><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${c};margin-right:6px"></span>${s.name}：<b>${fmtMoney(s.values[idx] || 0)}</b></div>`;
+    });
+    showTip(tip, `<div style="margin-bottom:3px;opacity:.7">${labels[idx]}</div>${rows.join('')}`, (ev.clientX - rect.left), (ev.clientY - rect.top));
+  });
+  band.addEventListener('mouseleave', () => { hideTip(tip); guide.setAttribute('opacity', 0); });
+  el.appendChild(svg);
+  return svg;
+}
+function renderDonut(el, items, opts) {
+  opts = opts || {};
+  clearChart(el);
+  const total = items.reduce((s, x) => s + (Number(x.amount) || 0), 0);
+  const size = 240, r = 84, cx = 120, cy = 120;
+  const C = 2 * Math.PI * r;
+  const svg = _el('svg', { viewBox: `0 0 ${size} ${size}`, role: 'img' });
+  if (total <= 0) {
+    const t = _el('text', { x: cx, y: cy, 'text-anchor': 'middle', 'font-size': 14, fill: CHART_AXIS });
+    t.textContent = '暂无数据';
+    svg.appendChild(t);
+    el.appendChild(svg);
+    return svg;
+  }
+  let acc = 0;
+  items.forEach((it, i) => {
+    const val = Number(it.amount) || 0;
+    if (val <= 0) return;
+    const frac = val / total;
+    const seg = frac * C;
+    const color = it.color || CHART_COLORS[i % CHART_COLORS.length];
+    const circ = _el('circle', { cx, cy, r, fill: 'none', stroke: color, 'stroke-width': 34, 'stroke-dasharray': `${seg} ${C - seg}`, 'stroke-dashoffset': -acc, transform: `rotate(-90 ${cx} ${cy})` });
+    circ.addEventListener('mouseenter', ev => { const rect = el.getBoundingClientRect(); showTip(ensureTip(el), `${it.name}<br><b>${fmtMoney(val)}</b>（${(frac * 100).toFixed(1)}%）`, (ev.clientX - rect.left), (ev.clientY - rect.top)); });
+    circ.addEventListener('mouseleave', () => hideTip(ensureTip(el)));
+    svg.appendChild(circ);
+    acc += seg;
+  });
+  const c1 = _el('text', { x: cx, y: cy - 6, 'text-anchor': 'middle', 'font-size': 13, fill: CHART_LABEL });
+  c1.textContent = opts.centerLabel || '合计';
+  const c2 = _el('text', { x: cx, y: cy + 20, 'text-anchor': 'middle', 'font-size': 20, fill: CHART_INK, 'font-weight': 600 });
+  c2.textContent = fmtMoney0(total);
+  svg.appendChild(c1); svg.appendChild(c2);
+  el.appendChild(svg);
+  return svg;
+}
+function renderHBar(el, items, opts) {
+  opts = opts || {};
+  clearChart(el);
+  const rowH = 34, padL = 8, padR = 72;
+  const W = 1000, H = items.length * rowH + 6;
+  const max = Math.max(1, ...items.map(x => Number(x.amount) || 0));
+  const svg = _el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img' });
+  items.forEach((it, i) => {
+    const val = Number(it.amount) || 0;
+    const y = i * rowH + 6;
+    const color = it.color || CHART_COLORS[i % CHART_COLORS.length];
+    const bw = Math.max(2, (val / max) * (W - padL - padR));
+    const name = _el('text', { x: padL, y: y + 19, 'font-size': 13, fill: CHART_INK });
+    name.textContent = it.name.length > 10 ? it.name.slice(0, 10) + '…' : it.name;
+    svg.appendChild(name);
+    const bar = _el('rect', { x: padL, y: y + 7, width: bw, height: 16, rx: 3, fill: color });
+    bar.addEventListener('mouseenter', ev => { const rect = el.getBoundingClientRect(); showTip(ensureTip(el), `${it.name}<br><b>${fmtMoney(val)}</b>`, (ev.clientX - rect.left), (ev.clientY - rect.top)); });
+    bar.addEventListener('mouseleave', () => hideTip(ensureTip(el)));
+    svg.appendChild(bar);
+    const v = _el('text', { x: padL + bw + 8, y: y + 19, 'font-size': 12, fill: CHART_LABEL });
+    v.textContent = fmtMoney0(val);
+    svg.appendChild(v);
+  });
+  el.appendChild(svg);
+  return svg;
+}
+function renderLegend(el, items) {
+  el.innerHTML = items.map((it, i) => {
+    const c = it.color || CHART_COLORS[i % CHART_COLORS.length];
+    return `<span class="lg"><span class="sw" style="background:${c}"></span>${it.name} ${it.amount !== undefined ? '<b class="num">' + fmtMoney0(it.amount) + '</b>' : ''}</span>`;
+  }).join('');
+}
+</script>
+
+<script>
+/* ============ app.js ============ */
+const ICONS = {
+  home:  '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  write: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  book:  '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>',
+  chart: '<path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/>',
+  bulb:  '<path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5.76.76 1.23 1.52 1.41 2.5"/>',
+  gear:  '<line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>'
+};
+function iconSvg(name, size) {
+  size = size || 20;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICONS[name] || ''}</svg>`;
+}
+function sealLogo() {
+  return `<svg viewBox="0 0 38 38" fill="none" aria-hidden="true">
+    <rect x="2" y="2" width="34" height="34" rx="5" fill="#c8512e"/>
+    <rect x="6" y="6" width="26" height="26" rx="3" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="1"/>
+    <text x="19" y="17" text-anchor="middle" fill="#ffffff" font-size="12" font-weight="700">峨</text>
+    <text x="19" y="31" text-anchor="middle" fill="#ffffff" font-size="12" font-weight="700">边</text>
+  </svg>`;
+}
+function qs(sel, root) { return (root || document).querySelector(sel); }
+function qsa(sel, root) { return Array.from((root || document).querySelectorAll(sel)); }
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+let _toastEl = null;
+function toast(msg, type) {
+  if (!_toastEl) { _toastEl = document.createElement('div'); _toastEl.className = 'toast'; document.body.appendChild(_toastEl); }
+  _toastEl.textContent = msg;
+  _toastEl.className = 'toast show ' + (type || '');
+  clearTimeout(_toastEl._t);
+  _toastEl._t = setTimeout(() => { _toastEl.className = 'toast'; }, 2200);
+}
+const VIEWS = {
+  overview: { title: '总览', meta: '财务报表 · 状况评估 · 历史数据', render: renderOverview, mount: renderOverviewMount },
+  jizhang:  { title: '记账', meta: '输入收支，自动对应会计科目', render: renderJizhang, mount: mountJizhang },
+  zhangben: { title: '账本', meta: '流水账与科目汇总', render: renderZhangben, mount: mountZhangben },
+  fenxi:    { title: '盈亏分析', meta: '一周 / 一月 / 一季度 / 一年', render: renderFenxi, mount: mountFenxi },
+  juece:    { title: '经营建议', meta: '规则引擎 + 预留 AI 接口', render: renderJuece, mount: mountJuece },
+  shezhi:   { title: '设置', meta: '基本信息、期初资金与数据管理', render: renderShezhi, mount: mountShezhi }
+};
+const NAV_ORDER = ['overview', 'jizhang', 'zhangben', 'fenxi', 'juece', 'shezhi'];
+const NAV_LABEL = { overview: '总览', jizhang: '记账', zhangben: '账本', fenxi: '盈亏分析', juece: '经营建议', shezhi: '设置' };
+const NAV_ICON = { overview: 'home', jizhang: 'write', zhangben: 'book', fenxi: 'chart', juece: 'bulb', shezhi: 'gear' };
+function parseHash() {
+  const h = (location.hash || '').replace(/^#\/?/, '');
+  return VIEWS[h] ? h : 'overview';
+}
+function renderTopnav(active) {
+  const org = getSettings().orgName;
+  const now = new Date();
+  const wk = '日一二三四五六'[now.getDay()];
+  const dateStr = `${now.getMonth() + 1}月${now.getDate()}日 · 星期${wk}`;
+  qs('#topnav').innerHTML = `
+    <div class="topnav-inner">
+      <a class="brand" href="#/overview">
+        <span class="brand-mark">${sealLogo()}</span>
+        <span>
+          <span class="brand-name">云端彝乡财务管理系统</span>
+          <br><span class="brand-sub">${escapeHtml(org)}</span>
+        </span>
+      </a>
+      <nav class="nav">
+        ${NAV_ORDER.map(k =>
+          `<a href="#/${k}" class="${k === active ? 'active' : ''}"><span class="nav-ico">${iconSvg(NAV_ICON[k], 18)}</span><span>${NAV_LABEL[k]}</span></a>`
+        ).join('')}
+      </nav>
+      <div class="topnav-right">
+        <span class="topnav-date no-print">${dateStr}</span>
+        <a class="btn btn-primary btn-sm" href="#/jizhang">记一笔</a>
+      </div>
+    </div>`;
+}
+function router() {
+  const key = parseHash();
+  const v = VIEWS[key];
+  renderTopnav(key);
+  const content = qs('#content');
+  content.innerHTML = '<div class="view"><div class="page-head"><h1 class="page-title">' + v.title + '</h1><p class="page-meta">' + v.meta + '</p></div>' + v.render() + '</div>';
+  if (typeof v.mount === 'function') v.mount();
+}
+window.addEventListener('hashchange', router);
+document.addEventListener('DOMContentLoaded', () => { getState(); router(); });
+document.addEventListener('click', ev => {
+  const nav = ev.target.closest('[data-nav]');
+  if (nav) { location.hash = '#/' + nav.dataset.nav; }
+});
+function renderOverview() {
+  const txs = getTransactions();
+  const settings = getSettings();
+  const all = aggregate(txs);
+  const bal = balances(settings, all.income, all.expense);
+  const g = generateAdvice(txs, settings);
+  const mi = getPeriodInfo('month');
+  const monthTxs = filterTx(txs, mi.from, mi.to);
+  const monthAgg = aggregate(monthTxs);
+  const r = g.ratios;
+  const lvTxt = { normal: '健康', watch: '关注', warn: '预警' };
+  const monthlyAvgExpense = all.expense / Math.max(1, countActiveMonths(txs));
+  const cushion = monthlyAvgExpense > 0 ? bal.close / monthlyAvgExpense : 0;
+  const metrics = [
+    { label: '净收益率', val: (r.netMargin * 100).toFixed(1) + '%', tone: r.netMargin < 0 ? 'neg' : r.netMargin < 0.05 ? '' : 'pos' },
+    { label: '费用率', val: (r.expenseRatio * 100).toFixed(1) + '%', tone: r.expenseRatio > 0.8 ? 'neg' : 'pos' },
+    { label: '补助依赖度', val: (r.subsidizeRatio * 100).toFixed(1) + '%', tone: r.subsidizeRatio > 0.5 ? 'neg' : 'pos' },
+    { label: '收入集中度', val: (r.topIncomeRatio * 100).toFixed(1) + '%', tone: r.topIncomeRatio > 0.6 ? '' : 'pos' },
+    { label: '管理费用率', val: (r.adminRatio * 100).toFixed(1) + '%', tone: r.adminRatio > 0.35 ? '' : 'pos' },
+    { label: '现金储备', val: bal.close < 0 ? '已赤字' : cushion > 99 ? '充足' : cushion.toFixed(1) + ' 个月', tone: cushion < 3 ? 'neg' : 'pos' }
+  ];
+  const modules = [
+    { k: 'jizhang', icon: 'write', title: '记账', status: `本月已记 ${monthTxs.length} 笔`, desc: '收支自动对应科目' },
+    { k: 'zhangben', icon: 'book', title: '账本', status: `累计 ${txs.length} 笔`, desc: '流水与科目汇总' },
+    { k: 'fenxi', icon: 'chart', title: '盈亏分析', status: `本月结余 ${fmtMoney0(monthAgg.net)}`, desc: '周月季年可视化' },
+    { k: 'juece', icon: 'bulb', title: '经营建议', status: `${g.advice.length} 条 · ${g.levelName}`, desc: '规则引擎决策' },
+    { k: 'shezhi', icon: 'gear', title: '设置', status: isPersistent() ? '数据已本地保存' : '建议导出备份', desc: '期初与数据管理' }
+  ];
+  return `
+    <div class="overview-head">
+      <div>
+        <div class="ov-title">${escapeHtml(settings.orgName)}</div>
+        <div class="ov-sub">峨边彝族自治县 · ${fmtPeriodStart(settings.periodStart)}起 · 已累计记账 ${txs.length} 笔</div>
+      </div>
+      <span class="stamp ${g.level}">综合状况：${lvTxt[g.level]}</span>
+    </div>
+    <div class="section-title">财务报表</div>
+    <section class="sizhu" style="margin-top:12px">
+      <div class="sizhu-col"><div class="zh">旧管</div><div class="en">期初资金</div><div class="val num">${fmtMoney(bal.open)}</div><div class="sizhu-arrow">→</div></div>
+      <div class="sizhu-col income"><div class="zh">新收</div><div class="en">累计收入</div><div class="val num">${fmtMoney(all.income)}</div><div class="sizhu-arrow">→</div></div>
+      <div class="sizhu-col expense"><div class="zh">开除</div><div class="en">累计支出</div><div class="val num">${fmtMoney(all.expense)}</div><div class="sizhu-arrow">→</div></div>
+      <div class="sizhu-col final"><div class="zh">见在</div><div class="en">期末资金</div><div class="val num">${fmtMoney(bal.close)}</div></div>
+    </section>
+    <div class="section-title" style="margin-top:28px">状况评估</div>
+    <div class="grid grid-2-1" style="margin-top:12px">
+      <div class="card">
+        <div class="card-head"><span class="card-title">财务健康雷达</span><span class="card-sub">六维评估 · 满分 100</span></div>
+        <div class="radar-box" id="ov-radar"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">关键指标</span></div>
+        <div class="grid grid-2" style="gap:12px">
+          ${metrics.map(x => `
+            <div class="card stat ${x.tone === 'neg' ? 'neg' : x.tone === 'pos' ? 'pos' : ''}" style="padding:13px 15px;box-shadow:none">
+              <div class="stat-label">${x.label}</div>
+              <div class="stat-value num" style="font-size:19px">${x.val}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="section-title" style="margin-top:28px">历史数据</div>
+    <div class="grid grid-2-1" style="margin-top:12px">
+      <div class="card">
+        <div class="card-head"><span class="card-title">收支趋势</span><span class="card-sub">近 12 个月</span></div>
+        <div class="chart-box" id="ov-trend" style="min-height:260px"></div>
+        <div class="chart-legend"><span class="lg"><span class="sw" style="background:#2f8f63"></span>收入</span><span class="lg"><span class="sw" style="background:#d85454"></span>支出</span></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">最近记账</span><a class="btn btn-ghost btn-sm" href="#/zhangben" style="margin-left:auto">查看全部</a></div>
+        <div class="table-wrap">
+          <table class="ledger">
+            <thead><tr><th>日期</th><th>摘要</th><th class="num">金额</th></tr></thead>
+            <tbody>${recentRows(txs, 8)}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="section-title" style="margin-top:28px">功能</div>
+    <div class="module-grid" style="margin-top:12px">
+      ${modules.map(m => `
+        <div class="module-card" data-nav="${m.k}">
+          <div class="m-ico">${iconSvg(m.icon, 20)}</div>
+          <div class="m-title">${m.title}</div>
+          <div class="m-status">${m.status}</div>
+          <div class="m-desc">${m.desc}</div>
+        </div>`).join('')}
+    </div>`;
+}
+function renderOverviewMount() {
+  const txs = getTransactions();
+  const g = generateAdvice(txs, getSettings());
+  const ms = monthlySeries(txs, 12);
+  renderLine(qs('#ov-trend'), ms.map(x => x.label),
+    [{ name: '收入', color: '#2f8f63', values: ms.map(x => x.income) },
+     { name: '支出', color: '#d85454', values: ms.map(x => x.expense) }], { area: true });
+  renderRadar(qs('#ov-radar'), healthScores(txs, g));
+}
+function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+function healthScores(txs, g) {
+  const r = g.ratios, bal = g.balances;
+  const monthlyAvgExpense = g.all.expense / Math.max(1, countActiveMonths(txs));
+  const cushion = monthlyAvgExpense > 0 ? bal.close / monthlyAvgExpense : 0;
+  const qi = getPeriodInfo('quarter');
+  const qcur = aggregate(filterTx(txs, qi.from, qi.to)).net;
+  const qprev = aggregate(filterTx(txs, qi.prevFrom, qi.prevTo)).net;
+  const growth = qprev > 0 ? (qcur - qprev) / qprev : (qcur > 0 ? 1 : 0);
+  const s = v => Math.round(clamp01(v) * 100);
+  return [
+    { name: '盈利能力', score: s(r.netMargin / 0.3) },
+    { name: '成本控制', score: s(1 - r.expenseRatio / 1.2) },
+    { name: '收入多元', score: s(1 - r.topIncomeRatio) },
+    { name: '自主造血', score: s(1 - r.subsidizeRatio) },
+    { name: '流动性',   score: s(cushion / 12) },
+    { name: '增长性',   score: s((growth + 1) / 2) }
+  ];
+}
+function renderRadar(el, items) {
+  clearChart(el);
+  const size = 340, cx = 170, cy = 170, R = 112;
+  const n = items.length;
+  const ang = i => -Math.PI / 2 + i * 2 * Math.PI / n;
+  const pt = (i, r) => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
+  const svg = _el('svg', { viewBox: `0 0 ${size} ${size}`, role: 'img' });
+  for (let lv = 1; lv <= 4; lv++) {
+    const r = R * lv / 4;
+    const pts = [];
+    for (let i = 0; i < n; i++) { const p = pt(i, r); pts.push(p[0] + ',' + p[1]); }
+    svg.appendChild(_el('polygon', { points: pts.join(' '), fill: 'none', stroke: lv === 4 ? '#d3e7dc' : '#e0efe6', 'stroke-width': 1 }));
+  }
+  for (let i = 0; i < n; i++) {
+    const p = pt(i, R);
+    svg.appendChild(_el('line', { x1: cx, y1: cy, x2: p[0], y2: p[1], stroke: '#e0efe6', 'stroke-width': 1 }));
+  }
+  const dpts = items.map((it, i) => { const p = pt(i, R * it.score / 100); return p[0] + ',' + p[1]; });
+  svg.appendChild(_el('polygon', { points: dpts.join(' '), fill: 'rgba(47,143,99,.16)', stroke: '#2f8f63', 'stroke-width': 2 }));
+  items.forEach((it, i) => {
+    const p = pt(i, R * it.score / 100);
+    svg.appendChild(_el('circle', { cx: p[0], cy: p[1], r: 3, fill: '#fff', stroke: '#2f8f63', 'stroke-width': 2 }));
+  });
+  items.forEach((it, i) => {
+    const lp = pt(i, R + 20);
+    const lt = _el('text', { x: lp[0], y: lp[1] + 4, 'text-anchor': 'middle', 'font-size': 12, fill: '#4a6b5c' });
+    lt.textContent = it.name;
+    svg.appendChild(lt);
+    const sp = pt(i, R + 38);
+    const st = _el('text', { x: sp[0], y: sp[1] + 4, 'text-anchor': 'middle', 'font-size': 13, fill: '#257a52', 'font-weight': 600 });
+    st.textContent = it.score;
+    svg.appendChild(st);
+  });
+  el.appendChild(svg);
+}
+function recentRows(txs, n) {
+  const list = [...txs].sort((a, b) => (b.date < a.date ? -1 : b.date > a.date ? 1 : (b.createdAt > a.createdAt ? 1 : -1))).slice(0, n);
+  if (!list.length) return `<tr><td colspan="3" class="empty">还没有记账，点右上角「记一笔」开始</td></tr>`;
+  return list.map(t => `
+    <tr>
+      <td class="num">${t.date.slice(5).replace('-', '/')}</td>
+      <td>${escapeHtml(t.summary)}</td>
+      <td class="num ${t.flow === 'income' ? 'pos' : 'neg'}">${t.flow === 'income' ? '+' : '-'}${fmtMoney(t.amount).slice(1)}</td>
+    </tr>`).join('');
+}
+function subjectOptionsHtml(selected) {
+  const groups = {};
+  for (const s of SUBJECTS) {
+    if (!groups[s.cat]) groups[s.cat] = [];
+    groups[s.cat].push(s);
+  }
+  return SUBJECT_CATEGORIES.filter(c => groups[c.key]).map(c =>
+    `<optgroup label="${c.name}">${groups[c.key].map(s =>
+      `<option value="${s.code}" ${s.code === selected ? 'selected' : ''}>${s.code} ${s.name}</option>`).join('')}</optgroup>`
+  ).join('');
+}
+let jzFlow = 'income';
+function renderJizhang() {
+  return `
+    <p class="section-lead">记一笔收支，系统按《村集体经济组织会计制度》自动对应到会计科目，解决记账不规范。</p>
+    <div class="grid grid-2-1">
+      <div class="card">
+        <div class="card-head"><span class="card-title">记一笔</span></div>
+        <div class="field">
+          <label class="field-label">资金流向 <span class="req">*</span></label>
+          <div class="tabs" id="jz-flow">
+            <button type="button" class="tab ${jzFlow === 'income' ? 'active' : ''}" data-flow="income">收入（进账）</button>
+            <button type="button" class="tab ${jzFlow === 'expense' ? 'active' : ''}" data-flow="expense">支出（出账）</button>
+          </div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="field"><label class="field-label">日期 <span class="req">*</span></label><input class="input" type="date" id="jz-date"></div>
+          <div class="field"><label class="field-label">金额（元）<span class="req">*</span></label><input class="input num" type="number" id="jz-amount" min="0" step="0.01" placeholder="0.00"></div>
+        </div>
+        <div class="field">
+          <label class="field-label">摘要 / 用途 <span class="req">*</span></label>
+          <input class="input" type="text" id="jz-summary" maxlength="40" placeholder="例如：购买化肥种子、收到财政补助、出租厂房租金…">
+          <div class="hint">输入用途后自动匹配会计科目</div>
+        </div>
+        <div class="field" id="jz-map-box" style="display:none">
+          <div class="card" style="background:var(--primary-faint);box-shadow:none"><div id="jz-map-hint" style="font-size:14px"></div></div>
+        </div>
+        <div class="field">
+          <label class="field-label">会计科目 <span class="req">*</span></label>
+          <select class="select" id="jz-subject"></select>
+          <div class="hint" id="jz-guide"></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="field"><label class="field-label">资金账户</label>
+            <select class="select" id="jz-account"><option value="bank">银行存款</option><option value="cash">现金</option></select></div>
+          <div class="field"><label class="field-label">对方单位 / 个人</label><input class="input" type="text" id="jz-counterparty" maxlength="20" placeholder="选填"></div>
+        </div>
+        <div class="field"><label class="field-label">备注</label><textarea class="textarea" id="jz-note" placeholder="选填，可记录票据号等"></textarea></div>
+        <button class="btn btn-primary btn-block" id="jz-save">保存记账</button>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">今日记账</span><span class="card-sub" id="jz-today-count"></span></div>
+        <div class="table-wrap">
+          <table class="ledger"><thead><tr><th>摘要</th><th>科目</th><th class="num">金额</th></tr></thead><tbody id="jz-today-list"></tbody></table>
+        </div>
+      </div>
+    </div>`;
+}
+function mountJizhang() {
+  qs('#jz-date').value = todayStr();
+  qs('#jz-subject').innerHTML = subjectOptionsHtml('');
+  refreshJzToday();
+  qsa('#jz-flow .tab').forEach(b => b.addEventListener('click', () => {
+    jzFlow = b.dataset.flow;
+    qsa('#jz-flow .tab').forEach(x => x.classList.toggle('active', x === b));
+    updateJzMapping();
+  }));
+  qs('#jz-summary').addEventListener('input', updateJzMapping);
+  qs('#jz-subject').addEventListener('change', () => {
+    const g = subjectGuide(qs('#jz-subject').value);
+    qs('#jz-guide').textContent = g ? g.desc + '　示例：' + g.examples.slice(0, 5).join('、') : '';
+  });
+  qs('#jz-save').addEventListener('click', saveJz);
+}
+function updateJzMapping() {
+  const text = qs('#jz-summary').value.trim();
+  const box = qs('#jz-map-box'), hint = qs('#jz-map-hint'), guide = qs('#jz-guide');
+  const m = mapSubject(text, jzFlow);
+  if (m) {
+    box.style.display = '';
+    hint.innerHTML = `<span class="badge ${jzFlow === 'income' ? 'income' : 'expense'}">系统建议科目</span> <b>${m.name}</b>（${m.code}）<span style="color:var(--faint)">· 命中：${m.matched.map(escapeHtml).join('、') || '—'}</span>`;
+    qs('#jz-subject').innerHTML = subjectOptionsHtml(m.code);
+    const g = subjectGuide(m.code);
+    if (g) guide.textContent = g.desc + '　示例：' + g.examples.slice(0, 5).join('、');
+  } else {
+    box.style.display = text ? '' : 'none';
+    hint.innerHTML = `<span class="badge warn">暂未识别</span> 请在下方手动选择科目，或把摘要写得更具体（如「购买化肥」「收到补助」）。`;
+    guide.textContent = '';
+    qs('#jz-subject').innerHTML = subjectOptionsHtml('');
+  }
+}
+function refreshJzToday() {
+  const today = todayStr();
+  const list = getTransactions().filter(t => t.date === today).sort((a, b) => b.createdAt > a.createdAt ? 1 : -1);
+  qs('#jz-today-count').textContent = list.length ? `共 ${list.length} 笔` : '';
+  const tb = qs('#jz-today-list');
+  tb.innerHTML = list.length ? list.map(t => `
+    <tr>
+      <td>${escapeHtml(t.summary)}</td>
+      <td><span class="badge ${t.flow === 'income' ? 'income' : 'expense'}">${escapeHtml(t.subjectName)}</span></td>
+      <td class="num ${t.flow === 'income' ? 'pos' : 'neg'}">${t.flow === 'income' ? '+' : '-'}${fmtMoney(t.amount).slice(1)}</td>
+    </tr>`).join('') : `<tr><td colspan="3" class="empty">今天还没有记账</td></tr>`;
+}
+function saveJz() {
+  const amount = Number(qs('#jz-amount').value);
+  const summary = qs('#jz-summary').value.trim();
+  const date = qs('#jz-date').value;
+  if (!amount || amount <= 0) { toast('请输入正确的金额', 'error'); qs('#jz-amount').focus(); return; }
+  if (!summary) { toast('请填写摘要 / 用途', 'error'); qs('#jz-summary').focus(); return; }
+  if (!date) { toast('请选择日期', 'error'); return; }
+  const code = qs('#jz-subject').value;
+  const s = getSubject(code);
+  addTransaction({ date, flow: jzFlow, amount, summary, subjectCode: code, subjectName: s ? s.name : '', account: qs('#jz-account').value, counterparty: qs('#jz-counterparty').value.trim(), note: qs('#jz-note').value.trim() });
+  toast('已保存', 'success');
+  qs('#jz-amount').value = ''; qs('#jz-summary').value = ''; qs('#jz-counterparty').value = ''; qs('#jz-note').value = '';
+  qs('#jz-map-box').style.display = 'none';
+  qs('#jz-subject').innerHTML = subjectOptionsHtml('');
+  refreshJzToday();
+}
+let zbFilters = { q: '', flow: '', subject: '', from: '', to: '' };
+let zbView = 'flow';
+function renderZhangben() {
+  return `
+    <div class="tabs" id="zb-tabs" style="margin-bottom:18px">
+      <button class="tab ${zbView === 'flow' ? 'active' : ''}" data-view="flow">流水账</button>
+      <button class="tab ${zbView === 'summary' ? 'active' : ''}" data-view="summary">科目汇总</button>
+    </div>
+    <div class="card" style="padding:14px 18px;margin-bottom:18px">
+      <div class="form-row cols-3" style="gap:10px">
+        <div class="field" style="margin:0"><input class="input" type="search" id="zb-q" placeholder="搜索摘要 / 对方单位…"></div>
+        <div class="field" style="margin:0">
+          <select class="select" id="zb-flow"><option value="">全部方向</option><option value="income">收入</option><option value="expense">支出</option></select></div>
+        <div class="field" style="margin:0"><select class="select" id="zb-subject"></select></div>
+      </div>
+      <div class="form-row cols-2" style="gap:10px;margin-top:10px">
+        <div class="field" style="margin:0"><label class="field-label">开始日期</label><input class="input" type="date" id="zb-from"></div>
+        <div class="field" style="margin:0"><label class="field-label">结束日期</label><input class="input" type="date" id="zb-to"></div>
+      </div>
+    </div>
+    <div class="grid grid-3" style="margin-bottom:18px" id="zb-sum"></div>
+    <div class="card" id="zb-flow-card" style="${zbView === 'flow' ? '' : 'display:none'}">
+      <div class="card-head"><span class="card-title">流水账</span><span class="card-sub" id="zb-count"></span></div>
+      <div class="table-wrap">
+        <table class="ledger"><thead><tr><th>日期</th><th>摘要</th><th>科目</th><th>账户</th><th class="num">收入</th><th class="num">支出</th><th></th></tr></thead><tbody id="zb-tbody"></tbody></table>
+      </div>
+    </div>
+    <div class="card" id="zb-summary-card" style="${zbView === 'summary' ? '' : 'display:none'}">
+      <div class="card-head"><span class="card-title">科目发生额汇总</span><span class="card-sub">点击科目查看明细</span></div>
+      <div class="table-wrap">
+        <table class="ledger"><thead><tr><th>科目代码</th><th>科目名称</th><th>类别</th><th class="num">收入发生额</th><th class="num">支出发生额</th><th class="num">笔数</th></tr></thead><tbody id="zb-summary-tbody"></tbody></table>
+      </div>
+    </div>`;
+}
+function mountZhangben() {
+  qs('#zb-q').value = zbFilters.q;
+  qs('#zb-flow').value = zbFilters.flow;
+  qs('#zb-subject').innerHTML = '<option value="">全部科目</option>' + subjectOptionsHtml('');
+  qs('#zb-subject').value = zbFilters.subject;
+  qs('#zb-from').value = zbFilters.from;
+  qs('#zb-to').value = zbFilters.to;
+  qsa('#zb-tabs .tab').forEach(b => b.addEventListener('click', () => {
+    zbView = b.dataset.view;
+    qsa('#zb-tabs .tab').forEach(x => x.classList.toggle('active', x === b));
+    qs('#zb-flow-card').style.display = zbView === 'flow' ? '' : 'none';
+    qs('#zb-summary-card').style.display = zbView === 'summary' ? '' : 'none';
+  }));
+  qs('#zb-q').addEventListener('input', e => { zbFilters.q = e.target.value; renderZhangbenData(); });
+  qs('#zb-flow').addEventListener('change', e => { zbFilters.flow = e.target.value; renderZhangbenData(); });
+  qs('#zb-subject').addEventListener('change', e => { zbFilters.subject = e.target.value; renderZhangbenData(); });
+  qs('#zb-from').addEventListener('change', e => { zbFilters.from = e.target.value; renderZhangbenData(); });
+  qs('#zb-to').addEventListener('change', e => { zbFilters.to = e.target.value; renderZhangbenData(); });
+  qs('#zb-tbody').addEventListener('click', ev => {
+    const del = ev.target.closest('[data-del]');
+    if (del) { if (confirm('确定删除这笔记录吗？')) { deleteTransaction(del.dataset.del); toast('已删除'); renderZhangbenData(); } }
+  });
+  qs('#zb-summary-tbody').addEventListener('click', ev => {
+    const row = ev.target.closest('[data-sub]');
+    if (row) {
+      zbFilters.subject = row.dataset.sub;
+      zbView = 'flow';
+      qsa('#zb-tabs .tab').forEach(x => x.classList.toggle('active', x.dataset.view === 'flow'));
+      qs('#zb-flow-card').style.display = '';
+      qs('#zb-summary-card').style.display = 'none';
+      qs('#zb-subject').value = row.dataset.sub;
+      renderZhangbenData();
+    }
+  });
+  renderZhangbenData();
+}
+function zbFiltered() {
+  let txs = getTransactions();
+  if (zbFilters.q) { const q = zbFilters.q.toLowerCase(); txs = txs.filter(t => (t.summary || '').toLowerCase().includes(q) || (t.counterparty || '').toLowerCase().includes(q)); }
+  if (zbFilters.flow) txs = txs.filter(t => t.flow === zbFilters.flow);
+  if (zbFilters.subject) txs = txs.filter(t => t.subjectCode === zbFilters.subject);
+  if (zbFilters.from) txs = txs.filter(t => String(t.date).slice(0, 10) >= zbFilters.from);
+  if (zbFilters.to) txs = txs.filter(t => String(t.date).slice(0, 10) <= zbFilters.to);
+  return txs.sort((a, b) => (b.date < a.date ? -1 : b.date > a.date ? 1 : (b.createdAt > a.createdAt ? 1 : -1)));
+}
+function renderZhangbenData() {
+  const txs = zbFiltered();
+  const ag = aggregate(txs);
+  qs('#zb-sum').innerHTML = `
+    <div class="card stat ink" style="padding:14px 18px"><div class="stat-label">收入合计</div><div class="stat-value num" style="font-size:20px">${fmtMoney(ag.income)}</div></div>
+    <div class="card stat" style="padding:14px 18px"><div class="stat-label">支出合计</div><div class="stat-value num" style="font-size:20px">${fmtMoney(ag.expense)}</div></div>
+    <div class="card stat ${ag.net >= 0 ? 'pos' : 'neg'}" style="padding:14px 18px"><div class="stat-label">结余</div><div class="stat-value num" style="font-size:20px">${fmtMoney(ag.net)}</div></div>`;
+  qs('#zb-count').textContent = `共 ${txs.length} 笔`;
+  const tb = qs('#zb-tbody');
+  tb.innerHTML = txs.length ? txs.map(t => {
+    const isIn = t.flow === 'income';
+    return `<tr>
+      <td class="num">${t.date.slice(5).replace('-', '/')}</td>
+      <td>${escapeHtml(t.summary)}${t.counterparty ? `<span class="sub">${escapeHtml(t.counterparty)}</span>` : ''}</td>
+      <td><span class="badge ${isIn ? 'income' : 'expense'}">${escapeHtml(t.subjectName || '未分类')}</span></td>
+      <td>${t.account === 'cash' ? '现金' : '银行存款'}</td>
+      <td class="num ${isIn ? 'pos' : ''}">${isIn ? fmtMoney(t.amount) : ''}</td>
+      <td class="num ${isIn ? '' : 'neg'}">${isIn ? '' : fmtMoney(t.amount)}</td>
+      <td><button class="btn btn-ghost btn-sm" data-del="${t.id}" style="color:var(--accent)">删除</button></td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="7" class="empty"><span class="big">📖</span>没有符合条件的记录</td></tr>`;
+  const incBy = ag.incomeBySubject || {}, expBy = ag.expenseBySubject || {};
+  const codes = new Set([...Object.keys(incBy), ...Object.keys(expBy)]);
+  const rows = [];
+  for (const code of codes) {
+    const s = getSubject(code) || { name: code === '--' ? '未分类' : code, cat: '' };
+    const catName = (SUBJECT_CATEGORIES.find(c => c.key === s.cat) || {}).name || '';
+    rows.push({ code, name: s.name || code, cat: catName, inc: (incBy[code] || {}).amount || 0, exp: (expBy[code] || {}).amount || 0, count: ((incBy[code] || {}).count || 0) + ((expBy[code] || {}).count || 0) });
+  }
+  rows.sort((a, b) => a.code.localeCompare(b.code));
+  const stb = qs('#zb-summary-tbody');
+  stb.innerHTML = rows.length ? rows.map(r => `
+    <tr style="cursor:pointer" data-sub="${r.code}">
+      <td class="num">${r.code}</td><td><b>${escapeHtml(r.name)}</b></td><td>${r.cat}</td>
+      <td class="num ${r.inc > 0 ? 'pos' : ''}">${r.inc ? fmtMoney(r.inc) : ''}</td>
+      <td class="num ${r.exp > 0 ? 'neg' : ''}">${r.exp ? fmtMoney(r.exp) : ''}</td>
+      <td class="num">${r.count}</td>
+    </tr>`).join('') : `<tr><td colspan="6" class="empty">暂无数据</td></tr>`;
+}
+let fxKey = 'quarter';
+function renderFenxi() {
+  const info = getPeriodInfo(fxKey);
+  return `
+    <p class="section-lead">按周、月、季度、年度查看收支与盈亏，掌握集体资金真实状况。</p>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:18px">
+      <div class="tabs" id="fx-tabs">
+        <button class="tab ${fxKey === 'week' ? 'active' : ''}" data-key="week">本周</button>
+        <button class="tab ${fxKey === 'month' ? 'active' : ''}" data-key="month">本月</button>
+        <button class="tab ${fxKey === 'quarter' ? 'active' : ''}" data-key="quarter">本季度</button>
+        <button class="tab ${fxKey === 'year' ? 'active' : ''}" data-key="year">本年度</button>
+      </div>
+      <span class="badge" id="fx-range" style="font-size:13px">${info.from} 至 ${info.to}</span>
+    </div>
+    <div class="grid grid-4" id="fx-cards"></div>
+    <div class="card" style="margin-top:18px">
+      <div class="card-head"><span class="card-title">收支趋势</span><span class="card-sub" id="fx-trend-sub"></span></div>
+      <div class="chart-box" id="fx-trend" style="min-height:300px"></div>
+      <div class="chart-legend"><span class="lg"><span class="sw" style="background:#2f8f63"></span>收入</span><span class="lg"><span class="sw" style="background:#d85454"></span>支出</span></div>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <div class="card-head"><span class="card-title">各期盈亏</span><span class="card-sub">绿为盈余、红为亏损</span></div>
+      <div class="chart-box" id="fx-net" style="min-height:240px"></div>
+    </div>
+    <div class="grid grid-2" style="margin-top:18px">
+      <div class="card"><div class="card-head"><span class="card-title">收入构成</span></div><div class="chart-box" id="fx-inc" style="min-height:200px"></div><div class="chart-legend" id="fx-inc-lg"></div></div>
+      <div class="card"><div class="card-head"><span class="card-title">支出构成</span></div><div class="chart-box" id="fx-exp" style="min-height:200px"></div><div class="chart-legend" id="fx-exp-lg"></div></div>
+    </div>
+    <div class="grid grid-2" style="margin-top:18px">
+      <div class="card"><div class="card-head"><span class="card-title">收入科目排行</span></div><div class="chart-box" id="fx-inc-rank"></div></div>
+      <div class="card"><div class="card-head"><span class="card-title">支出科目排行</span></div><div class="chart-box" id="fx-exp-rank"></div></div>
+    </div>`;
+}
+function mountFenxi() {
+  qsa('#fx-tabs .tab').forEach(b => b.addEventListener('click', () => { fxKey = b.dataset.key; router(); }));
+  renderFenxiData();
+}
+function fxSeries(all, key) {
+  const info = getPeriodInfo(key);
+  const from = parseYMD(info.from);
+  if (key === 'week' || key === 'month') {
+    const out = [];
+    let d = parseYMD(info.from), t = parseYMD(info.to);
+    for (; d <= t; d = addDays(d, 1)) {
+      const ds = ymd(d);
+      const ag = aggregate(filterTx(all, ds, ds));
+      out.push({ label: (d.getMonth() + 1) + '/' + d.getDate(), income: ag.income, expense: ag.expense, net: ag.net });
+    }
+    return out;
+  }
+  const n = key === 'quarter' ? 3 : 12;
+  const start = key === 'quarter' ? startOfQuarter(from) : startOfYear(from);
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const d = new Date(start.getFullYear(), start.getMonth() + i, 1);
+    const f = ymd(d), t2 = ymd(new Date(d.getFullYear(), d.getMonth() + 1, 0));
+    const ag = aggregate(filterTx(all, f, t2));
+    out.push({ label: (d.getMonth() + 1) + '月', income: ag.income, expense: ag.expense, net: ag.net });
+  }
+  return out;
+}
+function renderNetBar(el, labels, values) {
+  clearChart(el);
+  const W = 1000, H = 240, padL = 60, padR = 18, padT = 18, padB = 34;
+  const iw = W - padL - padR, ih = H - padT - padB;
+  const maxAbs = Math.max(1, ...values.map(v => Math.abs(v)));
+  const max = niceMax(maxAbs);
+  const zeroY = padT + ih / 2, scale = (ih / 2) / max;
+  const svg = _el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img' });
+  [max, max / 2, 0, -max / 2, -max].forEach(v => {
+    const y = zeroY - v * scale;
+    svg.appendChild(_el('line', { x1: padL, y1: y, x2: W - padR, y2: y, stroke: v === 0 ? '#c8922e' : CHART_GRID, 'stroke-width': v === 0 ? 1.2 : 1 }));
+    const t = _el('text', { x: padL - 10, y: y + 4, 'text-anchor': 'end', 'font-size': 12, fill: CHART_AXIS });
+    t.textContent = axisFmt(v);
+    svg.appendChild(t);
+  });
+  const n = labels.length, groupW = iw / n, barW = Math.min(30, groupW * 0.5);
+  values.forEach((v, i) => {
+    const cx = padL + groupW * i + groupW / 2;
+    const h = Math.abs(v) * scale, y = v >= 0 ? zeroY - h : zeroY;
+    const bar = _el('rect', { x: cx - barW / 2, y, width: barW, height: Math.max(0.5, h), rx: 2, fill: v >= 0 ? '#2f8f63' : '#d85454' });
+    bar.addEventListener('mouseenter', ev => { const rect = el.getBoundingClientRect(); showTip(ensureTip(el), `${labels[i]}<br><b>${fmtMoney(v)}</b>`, (ev.clientX - rect.left), (ev.clientY - rect.top)); });
+    bar.addEventListener('mouseleave', () => hideTip(ensureTip(el)));
+    svg.appendChild(bar);
+  });
+  const labelStep = Math.ceil(n / 10);
+  labels.forEach((lb, i) => {
+    if (i % labelStep !== 0 && i !== n - 1) return;
+    const t = _el('text', { x: padL + groupW * i + groupW / 2, y: H - 10, 'text-anchor': 'middle', 'font-size': 12, fill: CHART_LABEL });
+    t.textContent = lb;
+    svg.appendChild(t);
+  });
+  el.appendChild(svg);
+}
+function renderFenxiData() {
+  const all = getTransactions();
+  const info = getPeriodInfo(fxKey);
+  const data = fxSeries(all, fxKey);
+  const txs = filterTx(all, info.from, info.to);
+  const ag = aggregate(txs);
+  const prev = aggregate(filterTx(all, info.prevFrom, info.prevTo));
+  const r = computeRatios(ag, ag.income, ag.expense);
+  qs('#fx-range').textContent = `${info.from} 至 ${info.to}`;
+  const delta = (cur, p) => (!p ? '<span style="color:var(--faint)">—</span>' : `<span class="${cur >= p ? 'up' : 'down'}" style="font-weight:600">${cur >= p ? '↑' : '↓'} ${cur >= p ? '+' : ''}${fmtMoney0(cur - p)}</span>`);
+  qs('#fx-cards').innerHTML = `
+    <div class="card stat ink"><div class="stat-label">收入</div><div class="stat-value num" style="font-size:24px">${fmtMoney(ag.income)}</div><div class="stat-hint">环比 ${delta(ag.income, prev.income)}</div></div>
+    <div class="card stat"><div class="stat-label">支出</div><div class="stat-value num" style="font-size:24px">${fmtMoney(ag.expense)}</div><div class="stat-hint">环比 ${delta(ag.expense, prev.expense)}</div></div>
+    <div class="card stat ${ag.net >= 0 ? 'pos' : 'neg'}"><div class="stat-label">结余（盈亏）</div><div class="stat-value num" style="font-size:24px">${fmtMoney(ag.net)}</div><div class="stat-hint">环比 ${delta(ag.net, prev.net)}</div></div>
+    <div class="card stat gold"><div class="stat-label">净收益率</div><div class="stat-value num" style="font-size:24px">${(r.netMargin * 100).toFixed(1)}%</div><div class="stat-hint">结余 ÷ 收入</div></div>`;
+  qs('#fx-trend-sub').textContent = ({ week: '按天', month: '按天', quarter: '按月', year: '按月' }[fxKey]) + ' · 收入与支出';
+  renderLine(qs('#fx-trend'), data.map(x => x.label), [{ name: '收入', color: '#2f8f63', values: data.map(x => x.income) }, { name: '支出', color: '#d85454', values: data.map(x => x.expense) }], { area: true });
+  renderNetBar(qs('#fx-net'), data.map(x => x.label), data.map(x => x.net));
+  const incTop = topN(ag.incomeBySubject, 5), expTop = topN(ag.expenseBySubject, 5);
+  renderDonut(qs('#fx-inc'), incTop); renderLegend(qs('#fx-inc-lg'), incTop);
+  renderDonut(qs('#fx-exp'), expTop); renderLegend(qs('#fx-exp-lg'), expTop);
+  const incRank = subjectList(ag.incomeBySubject).slice(0, 6).map((x, i) => ({ name: x.name, amount: x.amount, color: CHART_COLORS[i % CHART_COLORS.length] }));
+  const expRank = subjectList(ag.expenseBySubject).slice(0, 6).map((x, i) => ({ name: x.name, amount: x.amount, color: CHART_COLORS[i % CHART_COLORS.length] }));
+  if (incRank.length) renderHBar(qs('#fx-inc-rank'), incRank); else qs('#fx-inc-rank').innerHTML = '<div class="empty">本期无收入</div>';
+  if (expRank.length) renderHBar(qs('#fx-exp-rank'), expRank); else qs('#fx-exp-rank').innerHTML = '<div class="empty">本期无支出</div>';
+}
+function renderJuece() {
+  const txs = getTransactions();
+  const settings = getSettings();
+  const g = generateAdvice(txs, settings);
+  const r = g.ratios, bal = g.balances;
+  const monthlyAvgExpense = g.all.expense / Math.max(1, countActiveMonths(txs));
+  const cushion = monthlyAvgExpense > 0 ? bal.close / monthlyAvgExpense : 0;
+  const lvBadge = { normal: 'ok', watch: 'warn', warn: 'alert' };
+  const lvTxt = { normal: '健康', watch: '关注', warn: '预警' };
+  const lvDesc = { normal: '整体稳健，收支平衡，可继续按计划经营。', watch: '存在若干需关注的指标，建议按提示逐项改进。', warn: '部分指标已触及预警线，请尽快采取应对措施。' };
+  const barColor = g.level === 'warn' ? 'var(--negative)' : g.level === 'watch' ? 'var(--gold)' : 'var(--positive)';
+  const metrics = [
+    { label: '净收益率', val: (r.netMargin * 100).toFixed(1) + '%', hint: '结余 ÷ 收入', tone: r.netMargin < 0 ? 'neg' : r.netMargin < 0.05 ? '' : 'pos' },
+    { label: '费用率', val: (r.expenseRatio * 100).toFixed(1) + '%', hint: '支出 ÷ 收入', tone: r.expenseRatio > 0.8 ? 'neg' : r.expenseRatio > 0.7 ? '' : 'pos' },
+    { label: '补助依赖度', val: (r.subsidizeRatio * 100).toFixed(1) + '%', hint: '补助收入占比', tone: r.subsidizeRatio > 0.5 ? 'neg' : 'pos' },
+    { label: '收入集中度', val: (r.topIncomeRatio * 100).toFixed(1) + '%', hint: '最大来源占比', tone: r.topIncomeRatio > 0.6 ? '' : 'pos' },
+    { label: '管理费用率', val: (r.adminRatio * 100).toFixed(1) + '%', hint: '管理费占支出比', tone: r.adminRatio > 0.35 ? '' : 'pos' },
+    { label: '期末资金', val: fmtMoney0(bal.close), hint: '现金 + 银行存款', tone: bal.close < 0 ? 'neg' : 'pos' },
+    { label: '现金储备', val: bal.close < 0 ? '已赤字' : cushion > 99 ? '充足' : cushion.toFixed(1) + ' 个月', hint: '可覆盖月均支出', tone: cushion < 3 ? 'neg' : cushion < 6 ? '' : 'pos' },
+    { label: '本期结余', val: fmtMoney0(g.all.net), hint: '累计收 - 支', tone: g.all.net < 0 ? 'neg' : 'pos' }
+  ];
+  return `
+    <p class="section-lead">依据财务分析原则（盈利能力、偿债能力、收入结构、现金流），自动给出经营决策建议。</p>
+    <div class="card" style="margin-bottom:18px;border-top:4px solid ${barColor}">
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div style="font-family:var(--serif);font-size:22px;font-weight:700">综合财务状况评级</div>
+        <span class="stamp ${g.level}">${lvTxt[g.level]}</span>
+        <div style="color:var(--muted)">${lvDesc[g.level]}</div>
+      </div>
+    </div>
+    <div class="grid grid-4">${metrics.map(x => `
+      <div class="card stat ${x.tone === 'neg' ? 'neg' : x.tone === 'pos' ? 'pos' : ''}" style="padding:16px 18px">
+        <div class="stat-label">${x.label}</div><div class="stat-value num" style="font-size:22px">${x.val}</div><div class="stat-hint">${x.hint}</div>
+      </div>`).join('')}</div>
+    <div class="card" style="margin-top:18px">
+      <div class="card-head"><span class="card-title">决策建议</span><span class="card-sub">共 ${g.advice.length} 条</span></div>
+      ${g.advice.map(a => `
+        <div class="advice level-${a.level}">
+          <div class="advice-head"><span class="badge ${lvBadge[a.level]}">${lvTxt[a.level]}</span><span class="advice-title">${escapeHtml(a.title)}</span></div>
+          <div class="advice-body">${escapeHtml(a.body)}</div>
+          <div class="advice-metric">依据：${escapeHtml(a.metric)}</div>
+          ${a.actions && a.actions.length ? `<div style="margin-top:10px">${a.actions.map(x => `<span class="badge" style="margin-right:6px;margin-top:4px">${escapeHtml(x)}</span>`).join('')}</div>` : ''}
+        </div>`).join('')}
+    </div>
+    <div class="card" style="margin-top:18px;border-style:dashed;border-color:var(--gold);background:var(--gold-soft)">
+      <div class="card-head"><span class="card-title">AI 智能分析（接口已预留）</span><span class="badge warn">敬请期待</span></div>
+      <p style="margin:0 0 10px;color:var(--muted)">当前建议由<b>规则引擎</b>基于财务指标与阈值自动生成，稳定、可解释。数据层已预留对外接口，后续可接入大模型生成更个性化的建议。</p>
+      <button class="btn" disabled>接入 AI 分析（规划中）</button>
+    </div>`;
+}
+function mountJuece() {}
+function renderShezhi() {
+  const s = getSettings();
+  return `
+    <div class="grid grid-2">
+      <div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">基本信息</span></div>
+          <div class="field"><label class="field-label">单位名称</label><input class="input" type="text" id="s-org"></div>
+          <button class="btn btn-green" id="s-save-org">保存信息</button>
+        </div>
+        <div class="card" style="margin-top:18px">
+          <div class="card-head"><span class="card-title">期初资金（旧管）</span><span class="card-sub">建账时点已有的资金</span></div>
+          <div class="form-row cols-2">
+            <div class="field"><label class="field-label">库存现金（元）</label><input class="input num" type="number" id="s-cash" min="0" step="0.01"></div>
+            <div class="field"><label class="field-label">银行存款（元）</label><input class="input num" type="number" id="s-bank" min="0" step="0.01"></div>
+          </div>
+          <div class="hint" id="s-open-sum"></div>
+          <button class="btn btn-green" id="s-save-open">保存期初</button>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">数据管理</span></div>
+          <div id="s-storage-warn" style="display:none;margin-bottom:14px"></div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <button class="btn" id="s-export">导出数据（JSON）</button>
+            <label class="btn" style="cursor:pointer">导入数据（JSON）<input type="file" id="s-import" accept=".json,application/json" style="display:none"></label>
+            <button class="btn" id="s-seed">载入示例数据</button>
+            <button class="btn" id="s-reset" style="color:var(--accent);border-color:#f0c5c5">清空全部数据</button>
+          </div>
+          <div class="hint" style="margin-top:12px">数据保存在本机浏览器中，建议定期导出备份。</div>
+        </div>
+        <div class="card" style="margin-top:18px">
+          <div class="card-head"><span class="card-title">关于本系统</span></div>
+          <p style="margin:0;color:var(--muted);font-size:14px;line-height:1.9">云端彝乡财务管理系统面向峨边彝族自治县底底古村集体经济，服务民宿经营者与村集体财务负责人，提供规范记账、盈亏分析与经营建议。会计科目依据《村集体经济组织会计制度》一级科目设置；经营建议由财务规则引擎生成，仅供决策参考，不构成法律或审计意见。</p>
+        </div>
+      </div>
+    </div>`;
+}
+function mountShezhi() {
+  const s = getSettings();
+  qs('#s-org').value = s.orgName;
+  qs('#s-cash').value = s.cashInitial;
+  qs('#s-bank').value = s.bankInitial;
+  const renderOpenSum = () => { qs('#s-open-sum').textContent = '期初合计：' + fmtMoney((Number(qs('#s-cash').value) || 0) + (Number(qs('#s-bank').value) || 0)); };
+  renderOpenSum();
+  qs('#s-cash').addEventListener('input', renderOpenSum);
+  qs('#s-bank').addEventListener('input', renderOpenSum);
+  if (!isPersistent()) {
+    qs('#s-storage-warn').style.display = '';
+    qs('#s-storage-warn').innerHTML = '<div class="advice level-warn"><div class="advice-title">当前浏览器无法持久保存</div><div class="advice-body">请使用「导出数据」保存副本，下次打开时导入。</div></div>';
+  }
+  qs('#s-save-org').addEventListener('click', () => { updateSettings({ orgName: qs('#s-org').value.trim() || '村集体经济组织' }); toast('已保存'); });
+  qs('#s-save-open').addEventListener('click', () => { updateSettings({ cashInitial: round2(Number(qs('#s-cash').value) || 0), bankInitial: round2(Number(qs('#s-bank').value) || 0) }); toast('期初资金已保存'); });
+  qs('#s-export').addEventListener('click', () => {
+    const blob = new Blob([exportData()], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '云端彝乡备份-' + todayStr() + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast('已导出');
+  });
+  qs('#s-import').addEventListener('change', ev => {
+    const f = ev.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try { importData(reader.result); toast('导入成功', 'success'); setTimeout(() => router(), 500); }
+      catch (e) { toast('导入失败：' + e.message, 'error'); }
+    };
+    reader.readAsText(f);
+    ev.target.value = '';
+  });
+  qs('#s-seed').addEventListener('click', () => { if (confirm('载入示例数据会覆盖当前数据，确定吗？')) { seedData(); toast('已载入示例数据', 'success'); setTimeout(() => router(), 500); } });
+  qs('#s-reset').addEventListener('click', () => { if (confirm('确定清空全部记账数据吗？此操作不可恢复，建议先导出备份。')) { resetData(); toast('已清空'); setTimeout(() => router(), 500); } });
+}
+</script>
+</body>
+</html>
